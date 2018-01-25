@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Webpack step by step</title>
+  <title>DC-net</title>
   <link href='/public/main.css' media='all' rel='stylesheet' type='text/css' />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 </head>
@@ -23,10 +23,10 @@
       <h2 class="question">Would you like to pay for the dinner?</h2>
     </div>
     <div class="col-2 offset-4 choice-button-container">
-      <button type="button" id="yes-payer" class="choice-button btn btn-success btn-lg">Success</button>
+      <button type="button" id="yes-payer" class="choice-button btn btn-success btn-lg">YES</button>
     </div>
     <div class="col-2 choice-button-container">
-      <button type="button" id="no-payer" class="choice-button btn btn-danger btn-lg">Danger</button>
+      <button type="button" id="no-payer" class="choice-button btn btn-danger btn-lg">NO</button>
     </div>
   </div>
 
@@ -46,16 +46,25 @@
     $('.secret-bit-question').css('visibility', 'hidden');
 
     socket.on('reset', function() {
+      // hide choice
+      $('.secret-bit-question').css('visibility', 'hidden');
+
+      // delete messages
+      while(document.body.children.messages.hasChildNodes()) {
+        document.body.children.messages.removeChild(document.body.children.messages.lastChild);
+      }
+
       sessionStorage.clear();
     });
 
-    socket.on('system-message', function(message) {
+    socket.on('system-message', function(type, message) {
       $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
     });
 
     socket.on('key-exchange', function(keyName, key) {
       sessionStorage.setItem(keyName, key);
       if (sessionStorage.length == 2) {
+        sleep(1000);
         $('.secret-bit-question').css('visibility', 'visible');
       }
     });
@@ -79,6 +88,23 @@
       result = result % 2;
       socket.emit("client-value", result);
     });
+
+    socket.on('key-exchange-progress', function(message){
+      sleep(300);
+      $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
+    });
+
+
+    // force a delay to ease understanding of the simulation
+    function sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    }
+
   });
 </script>
 </html>

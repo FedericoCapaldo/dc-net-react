@@ -5,9 +5,15 @@ export default class MyComponent extends Component {
     super(props);
   }
 
+  sendInput() {
+    // console.log('voglio farcela');
+  }
+
   render() {
     return (
-      <div className="title"> This title coming from React Component !!!</div>
+      <div className="title" onClick={this.sendInput}>
+        DC-net simulation App
+      </div>
     );
   }
 }

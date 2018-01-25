@@ -5,11 +5,80 @@
   <meta charset="utf-8">
   <title>Webpack step by step</title>
   <link href='/public/main.css' media='all' rel='stylesheet' type='text/css' />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 </head>
 
 <body>
   <div id="main"></div>
   <script src='/public/main.js'></script>
-</body>
 
+  <ul id="messages"></ul>
+  <!-- <form id="chat-message" action="">
+    <input id="message" autocomplete="off" /><button>Send</button>
+  </form> -->
+
+  <!-- Columns are always 50% wide, on mobile and desktop -->
+  <div class="row fixed-bottom secret-bit-question">
+    <div class="col-12">
+      <h2 class="question">Would you like to pay for the dinner?</h2>
+    </div>
+    <div class="col-2 offset-4 choice-button-container">
+      <button type="button" id="yes-payer" class="choice-button btn btn-success btn-lg">Success</button>
+    </div>
+    <div class="col-2 choice-button-container">
+      <button type="button" id="no-payer" class="choice-button btn btn-danger btn-lg">Danger</button>
+    </div>
+  </div>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/jquery-1.11.1.js"></script>
+<script type="text/javascript">
+  $(function() {
+    var socket = io();
+
+    // $('#chat-message').submit(function() {
+    //   socket.emit("in-message", socket.id, $("#message").val());
+    //   $("#message").val('');
+    //   return false;
+    // });
+
+    $('.secret-bit-question').css('visibility', 'hidden');
+
+    socket.on('reset', function() {
+      sessionStorage.clear();
+    });
+
+    socket.on('system-message', function(message) {
+      $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
+    });
+
+    socket.on('key-exchange', function(keyName, key) {
+      sessionStorage.setItem(keyName, key);
+      if (sessionStorage.length == 2) {
+        $('.secret-bit-question').css('visibility', 'visible');
+      }
+    });
+
+    $('#yes-payer').click(function() {
+      var result = 1;
+      $('.secret-bit-question').css('visibility', 'hidden');
+      for(var x=0; x<sessionStorage.length; ++x) {
+        result += parseInt(sessionStorage.getItem(sessionStorage.key(x)));
+      }
+      result = result % 2;
+      socket.emit("client-value", result);
+    });
+
+    $('#no-payer').click(function() {
+      var result = 0;
+      $('.secret-bit-question').css('visibility', 'hidden');
+      for(var x=0; x<sessionStorage.length; ++x) {
+        result += parseInt(sessionStorage.getItem(sessionStorage.key(x)));
+      }
+      result = result % 2;
+      socket.emit("client-value", result);
+    });
+  });
+</script>
 </html>

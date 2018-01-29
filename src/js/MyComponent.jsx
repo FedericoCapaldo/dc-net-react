@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { sendMessage } from './socket-api';
 
 export default class MyComponent extends Component {
   constructor(props) {
@@ -8,7 +7,6 @@ export default class MyComponent extends Component {
 
   sendInput() {
     // console.log('voglio farcela');
-    sendMessage('something new yoooo');
   }
 
   render() {

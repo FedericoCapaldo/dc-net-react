@@ -32,7 +32,7 @@ var config = {
       include: __dirname + '/src/'
     }],
     loaders: [{
-      test: /\.jsx?$|\.js$/,
+      test: /\.jsx?$/,
       include: path.join(__dirname, 'src'),
       loader: "babel-loader",
       exclude: [nodeModulesPath]

@@ -31,43 +31,43 @@
   </div>
 
 </body>
-<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="/socket.io/socket.io.js"></script> -->
 <script src="js/jquery-1.11.1.js"></script>
 <script type="text/javascript">
   $(function() {
-    var socket = io();
+    // var socket = io();
 
     // $('#chat-message').submit(function() {
-    //   socket.emit("in-message", socket.id, $("#message").val());
+      // socket.emit("in-message", socket.id, $("#message").val());
     //   $("#message").val('');
     //   return false;
     // });
 
     $('.secret-bit-question').css('visibility', 'hidden');
 
-    socket.on('reset', function() {
-      // hide choice
-      $('.secret-bit-question').css('visibility', 'hidden');
+    // socket.on('reset', function() {
+    //   // hide choice
+    //   $('.secret-bit-question').css('visibility', 'hidden');
+    //
+    //   // delete messages
+    //   while(document.body.children.messages.hasChildNodes()) {
+    //     document.body.children.messages.removeChild(document.body.children.messages.lastChild);
+    //   }
+    //
+    //   sessionStorage.clear();
+    // });
 
-      // delete messages
-      while(document.body.children.messages.hasChildNodes()) {
-        document.body.children.messages.removeChild(document.body.children.messages.lastChild);
-      }
-
-      sessionStorage.clear();
-    });
-
-    socket.on('system-message', function(type, message) {
-      $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
-    });
-
-    socket.on('key-exchange', function(keyName, key) {
-      sessionStorage.setItem(keyName, key);
-      if (sessionStorage.length == 2) {
-        sleep(1000);
-        $('.secret-bit-question').css('visibility', 'visible');
-      }
-    });
+    // socket.on('system-message', function(type, message) {
+    //   $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
+    // });
+    //
+    // socket.on('key-exchange', function(keyName, key) {
+    //   sessionStorage.setItem(keyName, key);
+    //   if (sessionStorage.length == 2) {
+    //     sleep(1000);
+    //     $('.secret-bit-question').css('visibility', 'visible');
+    //   }
+    // });
 
     $('#yes-payer').click(function() {
       var result = 1;
@@ -76,7 +76,7 @@
         result += parseInt(sessionStorage.getItem(sessionStorage.key(x)));
       }
       result = result % 2;
-      socket.emit("client-value", result);
+      // socket.emit("client-value", result);
     });
 
     $('#no-payer').click(function() {
@@ -86,13 +86,13 @@
         result += parseInt(sessionStorage.getItem(sessionStorage.key(x)));
       }
       result = result % 2;
-      socket.emit("client-value", result);
+      // socket.emit("client-value", result);
     });
 
-    socket.on('key-exchange-progress', function(message){
-      sleep(300);
-      $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
-    });
+    // socket.on('key-exchange-progress', function(message){
+    //   sleep(300);
+    //   $('#messages').append($('<li>').text(message).css('font-weight', 'bold'));
+    // });
 
 
     // force a delay to ease understanding of the simulation

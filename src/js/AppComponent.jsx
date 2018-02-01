@@ -1,43 +1,71 @@
 import React, { Component } from 'react';
-import { updateOutput, sendMessage } from './socket-api';
-import ConnectionComponent from './Connection';
+import { recordEvent, showChoiceDialog } from './socket-api';
+import ConnectionComponent from './ConnectionComponent';
 import KeyGenerationComponent from './KeyGenerationComponent';
+import DialogComponent from './DialogComponent';
+import ParticipantResponseComponent from './ParticipantResponseComponent';
 
 export default class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      output: [],
+      allEvents: [],
+      showDiagol: false,
     };
 
-    updateOutput((type, output) => {
+    recordEvent((eventType, myEvent) => {
       this.setState({
-        output: this.state.output.concat({ type, output }),
+        allEvents: this.state.allEvents.concat({ eventType, myEvent }),
       });
+    });
+
+    showChoiceDialog(() => {
+      this.setState({
+        showDiagol: true,
+      });
+    });
+
+    this.hideDialog = this.hideDialog.bind(this);
+    this.addMessageToAppState = this.addMessageToAppState.bind(this);
+  }
+
+  hideDialog(e) {
+    e.preventDefault();
+    this.setState({
+      showDiagol: false,
     });
   }
 
-  componentDidMount() {
-    console.log('the component mounted');
+  addMessageToAppState(eventType, myEvent) {
+    this.setState({
+      allEvents: this.state.allEvents.concat({ eventType, myEvent }),
+    });
   }
-
-  sendInput() {
-    sendMessage('something');
-  }
-
 
   render() {
     return (
-      <div className="title" onClick={this.sendInput}>
+      <div className="title">
         DC-net simulation App
-        {this.state.output &&
-          this.state.output.map(function (ob) {
-            if (ob.type === 'CONNECTION') {
-              return <ConnectionComponent message={ob.output} />;
-            } else if (ob.type === 'KEY-GENERATION') {
-              return <KeyGenerationComponent generated={false} />;
+        {this.state.allEvents &&
+          this.state.allEvents.map(function callback(ob) {
+            if (ob.eventType === 'CONNECTION') {
+              return <ConnectionComponent message={ob.myEvent} />;
+            } else if (ob.eventType === 'KEY-GENERATION') {
+              return <KeyGenerationComponent />;
+            } else if (ob.eventType === 'PARTICIPANT-RESPONSE') {
+              return <ParticipantResponseComponent message={ob.myEvent} />;
+            } else if (ob.eventType === 'FINAL-ANSWER-PROGRESS') {
+              return <p>{ob.myEvent}</p>;
+            } else if (ob.eventType === 'ROUND-RESULT') {
+              return <p>{ob.myEvent}</p>;
             }
           })
+        }
+        {this.state.showDiagol &&
+          <DialogComponent
+            hideDialog={this.hideDialog}
+            addMessageToAppState={this.addMessageToAppState}
+          />
         }
       </div>
     );

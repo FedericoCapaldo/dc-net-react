@@ -6,16 +6,11 @@ export default class ConnectionComponent extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    console.log(this.props);
-  }
-
   render() {
     return (
       <p>{this.props.message}</p>
     );
   }
-
 }
 
 ConnectionComponent.propTypes = {

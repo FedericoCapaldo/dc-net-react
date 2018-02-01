@@ -1,9 +1,13 @@
 {
   "extends": "airbnb",
   "ecmaFeatures": {
-    
+
   },
   "globals": {
 
+  },
+  "rules": {
+    "react/jsx-no-bind": 0,
+    "radix": 0
   }
 }

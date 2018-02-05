@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { recordEvent, showChoiceDialog } from './socket-api';
+import { recordEvent, showChoiceDialog, hideChoiceDialog, reset, clearKeys } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import KeyGenerationComponent from './KeyGenerationComponent';
 import DialogComponent from './DialogComponent';
@@ -25,12 +25,29 @@ export default class AppComponent extends Component {
       });
     });
 
+    hideChoiceDialog(() => {
+      this.hideDialog();
+    });
+
+    reset(() => {
+      this.setState({
+        allEvents: [],
+      });
+      sessionStorage.clear();
+    });
+
+    clearKeys(() => {
+      sessionStorage.clear();
+    });
+
     this.hideDialog = this.hideDialog.bind(this);
     this.addMessageToAppState = this.addMessageToAppState.bind(this);
   }
 
   hideDialog(e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     this.setState({
       showDiagol: false,
     });

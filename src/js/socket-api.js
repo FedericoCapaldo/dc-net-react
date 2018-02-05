@@ -19,10 +19,34 @@ function showChoiceDialog(callback) {
   });
 }
 
+function hideChoiceDialog(callback) {
+  socket.on('hide-dialog', () => {
+    callback();
+  });
+}
+
 function receivedKeys(callback) {
   socket.on('key-exchange', (keyName, keyValue) => {
     callback(keyName, keyValue);
   });
 }
 
-export { recordEvent, showChoiceDialog, receivedKeys, sendParticipantResponse };
+function reset(callback) {
+  socket.on('reset', () => {
+    callback();
+  });
+}
+
+function clearKeys(callback) {
+  socket.on('clear-keys', () => {
+    callback();
+  });
+}
+
+export { recordEvent,
+         showChoiceDialog,
+         hideChoiceDialog,
+         receivedKeys,
+         sendParticipantResponse,
+         reset,
+         clearKeys };

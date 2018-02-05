@@ -34,4 +34,16 @@ describe('Helper functions', function() {
       expect(chatHelpers.areRoundsResultsReceived(clients)).to.equal(true);
     })
   });
+
+  describe('Client removal happens correctly', function() {
+    it('should remove the client with the provided id', function() {
+      let clients = [{name: "Alice", id: "xiu67324f", roundResult: 1},
+                     {name: "Bob", id: "chrqe9712bn", roundResult: 0},
+                     {name: "Charlie", id: "aaarqe22bn", roundResult: 0}];
+      const result = chatHelpers.removeClientFromArray(clients, "chrqe9712bn");
+      const clientsAfter = [{name: "Alice", id: "xiu67324f", roundResult: 1},
+                            {name: "Charlie", id: "aaarqe22bn", roundResult: 0}];
+      expect(result).to.eql(clientsAfter);
+    })
+  })
 });

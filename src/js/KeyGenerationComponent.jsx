@@ -1,27 +1,14 @@
 import React, { Component } from 'react';
-import { receivedKeys } from './socket-api';
+import PropTypes from 'prop-types';
 
 export default class KeyGenerationComponent extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      generated: false,
-    };
-
-    receivedKeys((keyName, keyValue) => {
-      sessionStorage.setItem(keyName, keyValue);
-      if (sessionStorage.length === 2) {
-        this.setState({
-          generated: true,
-        });
-      }
-    });
   }
 
   render() {
     let message;
-    if (this.state.generated) {
+    if (this.props.generated) {
       message = 'keys generated!  ';
       message += 'Your keys are: ';
       for (let i = 0; i < sessionStorage.length; ++i) {
@@ -37,3 +24,7 @@ export default class KeyGenerationComponent extends Component {
     );
   }
 }
+
+KeyGenerationComponent.propTypes = {
+  generated: PropTypes.boolean,
+};

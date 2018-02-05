@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { recordEvent, showChoiceDialog, hideChoiceDialog, reset, clearKeys } from './socket-api';
+import { recordEvent,
+         showChoiceDialog,
+         hideChoiceDialog,
+         receivedKeys,
+         reset,
+         clearKeys } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import KeyGenerationComponent from './KeyGenerationComponent';
 import DialogComponent from './DialogComponent';
@@ -11,6 +16,7 @@ export default class AppComponent extends Component {
     this.state = {
       allEvents: [],
       showDiagol: false,
+      generated: false,
     };
 
     recordEvent((eventType, myEvent) => {
@@ -34,6 +40,17 @@ export default class AppComponent extends Component {
         allEvents: [],
       });
       sessionStorage.clear();
+    });
+
+    receivedKeys((keyName, keyValue) => {
+      sessionStorage.setItem(keyName, keyValue);
+      if (sessionStorage.length === 2) {
+        this.setState({
+          generated: true,
+        });
+      } else if (sessionStorage.length > 2) {
+        // consider taking actions if there are more than 2 keys.
+      }
     });
 
     clearKeys(() => {
@@ -64,11 +81,11 @@ export default class AppComponent extends Component {
       <div className="title">
         DC-net simulation App
         {this.state.allEvents &&
-          this.state.allEvents.map(function callback(ob) {
+          this.state.allEvents.map((ob) => {
             if (ob.eventType === 'CONNECTION') {
               return <ConnectionComponent message={ob.myEvent} />;
             } else if (ob.eventType === 'KEY-GENERATION') {
-              return <KeyGenerationComponent />;
+              return <KeyGenerationComponent generated={this.state.generated} />;
             } else if (ob.eventType === 'PARTICIPANT-RESPONSE') {
               return <ParticipantResponseComponent message={ob.myEvent} />;
             } else if (ob.eventType === 'FINAL-ANSWER-PROGRESS') {

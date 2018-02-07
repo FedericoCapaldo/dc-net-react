@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { recordEvent,
+         startRound,
          showChoiceDialog,
          hideChoiceDialog,
          receivedKeys,
@@ -9,6 +10,7 @@ import ConnectionComponent from './ConnectionComponent';
 import KeyGenerationComponent from './KeyGenerationComponent';
 import DialogComponent from './DialogComponent';
 import ParticipantResponseComponent from './ParticipantResponseComponent';
+import RoundComponent from './RoundComponent';
 
 export default class AppComponent extends Component {
   constructor(props) {
@@ -17,11 +19,20 @@ export default class AppComponent extends Component {
       allEvents: [],
       showDiagol: false,
       generated: false,
+      roundNumber: 0,
+      roundInProgress: false,
     };
 
     recordEvent((eventType, myEvent) => {
       this.setState({
         allEvents: this.state.allEvents.concat({ eventType, myEvent }),
+      });
+    });
+
+    startRound((eventType) => {
+      this.setState({
+        allEvents: this.state.allEvents.concat({ eventType }),
+        roundNumber: ++this.state.roundNumber,
       });
     });
 
@@ -38,6 +49,7 @@ export default class AppComponent extends Component {
     reset(() => {
       this.setState({
         allEvents: [],
+        roundNumber: 0,
       });
       sessionStorage.clear();
     });
@@ -84,6 +96,8 @@ export default class AppComponent extends Component {
           this.state.allEvents.map((ob) => {
             if (ob.eventType === 'CONNECTION') {
               return <ConnectionComponent message={ob.myEvent} />;
+            } else if (ob.eventType === 'START-ROUND') {
+              return <RoundComponent number={this.state.roundNumber} />;
             } else if (ob.eventType === 'KEY-GENERATION') {
               return <KeyGenerationComponent generated={this.state.generated} />;
             } else if (ob.eventType === 'PARTICIPANT-RESPONSE') {

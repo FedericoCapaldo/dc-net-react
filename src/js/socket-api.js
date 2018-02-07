@@ -13,6 +13,12 @@ function recordEvent(callback) {
   });
 }
 
+function startRound(callback) {
+  socket.on('start-round', (type) => {
+    callback(type);
+  });
+}
+
 function showChoiceDialog(callback) {
   socket.on('show-dialog', () => {
     callback();
@@ -44,6 +50,7 @@ function clearKeys(callback) {
 }
 
 export { recordEvent,
+         startRound,
          showChoiceDialog,
          hideChoiceDialog,
          receivedKeys,

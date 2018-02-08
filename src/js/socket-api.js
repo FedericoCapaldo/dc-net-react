@@ -13,14 +13,26 @@ function recordEvent(callback) {
   });
 }
 
-function startRound(callback) {
-  socket.on('start-round', (type) => {
-    callback(type);
+function onConnection(callback) {
+  socket.on('connecting', (name) => {
+    callback(name);
   });
 }
 
-function showChoiceDialog(callback) {
-  socket.on('show-dialog', () => {
+function onDisconnection(callback) {
+  socket.on('disconnecting', (name) => {
+    callback(name);
+  });
+}
+
+function startRound(callback) {
+  socket.on('start-round', () => {
+    callback();
+  });
+}
+
+function startGeneratingKey(callback) {
+  socket.on('generating-keys', () => {
     callback();
   });
 }
@@ -49,9 +61,17 @@ function clearKeys(callback) {
   });
 }
 
-export { recordEvent,
+function roundResult(callback) {
+  socket.on('round-result', (result) => {
+    callback(result);
+  });
+}
+
+export { onConnection, onDisconnection,
+         recordEvent,
          startRound,
-         showChoiceDialog,
+         startGeneratingKey,
+         roundResult,
          hideChoiceDialog,
          receivedKeys,
          sendParticipantResponse,

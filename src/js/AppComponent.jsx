@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { recordEvent,
+import { sendParticipantResponse,
+         onConnection,
+         recordEvent,
          startRound,
-         showChoiceDialog,
+         startGeneratingKey,
+         roundResult,
          hideChoiceDialog,
          receivedKeys,
-         reset,
          clearKeys } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
@@ -15,44 +17,60 @@ export default class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allEvents: [],
+      events: [],
       rounds: [],
       showDiagol: false,
-      generated: false,
       roundNumber: 0,
       roundInProgress: false,
+      whoami: '',
     };
 
-    recordEvent((eventType, myEvent) => {
+    onConnection((name) => {
+      this.reset();
+      // const connectionMessage = 'New user \'' + name + 'connected';
       this.setState({
-        allEvents: this.state.allEvents.concat({ eventType, myEvent }),
+        whoami: name,
       });
-
-      if (eventType === 'ROUND-RESULT') {
-        const tempRounds = this.state.rounds;
-        tempRounds[tempRounds.length - 1].waiting = false;
-        tempRounds[tempRounds.length - 1].completed = true;
-        tempRounds[tempRounds.length - 1].finalResult = myEvent;
-        this.setState({
-          rounds: tempRounds,
-          roundInProgress: false,
-        });
-        console.log(this.state);
-      }
     });
 
-    startRound((eventType) => {
+    startRound(() => {
       this.setState({
-        allEvents: this.state.allEvents.concat({ eventType }),
         roundNumber: ++this.state.roundNumber,
         rounds: [...this.state.rounds, new Round(this.state.roundNumber)],
         roundInProgress: true,
       });
     });
 
-    showChoiceDialog(() => {
+    startGeneratingKey(() => {
+      const tempRounds = this.state.rounds;
+      tempRounds[tempRounds.length - 1].isWaitingKeys = true;
       this.setState({
-        showDiagol: true,
+        rounds: tempRounds,
+      });
+    });
+
+    receivedKeys((keyName, keyValue) => {
+      const tempRounds = this.state.rounds;
+      const currentRound = tempRounds[tempRounds.length - 1];
+      currentRound.keys = [...currentRound.keys, { keyName, keyValue }];
+
+      if (currentRound.keys.length === 2) {
+        currentRound.isWaitingKeys = false;
+        this.setState({
+          rounds: tempRounds,
+          showDiagol: true,
+        });
+      } else if (currentRound.keys < 2) {
+        this.setState({
+          rounds: tempRounds,
+        });
+      }
+      // consider taking actions if there are more than 2 keys.
+    });
+
+    recordEvent((eventType, myEvent) => {
+      this.setState({
+        events: this.state.events.concat({ eventType, myEvent }),
       });
     });
 
@@ -60,42 +78,57 @@ export default class AppComponent extends Component {
       this.hideDialog();
     });
 
-    reset(() => {
-      this.setState({
-        allEvents: [],
-        roundNumber: 0,
-        rounds: [],
-      });
-      sessionStorage.clear();
-    });
-
-    receivedKeys((keyName, keyValue) => {
-      sessionStorage.setItem(keyName, keyValue);
-      if (sessionStorage.length === 2) {
-        this.setState({
-          generated: true,
-        });
-      } else if (sessionStorage.length > 2) {
-        // consider taking actions if there are more than 2 keys.
-        console.warn('MORE THAN 2 KEYS PRESENT');
-      }
-
-      const tempRounds = this.state.rounds;
-      tempRounds[tempRounds.length - 1].keys =
-        [...tempRounds[tempRounds.length - 1].keys, { keyName, keyValue }];
-
-      this.setState({
-        rounds: tempRounds,
-      });
-    });
-
     clearKeys(() => {
       sessionStorage.clear();
     });
 
+    roundResult((result) => {
+      const tempRounds = this.state.rounds;
+      tempRounds[tempRounds.length - 1].isWaitingRoundResult = false;
+      tempRounds[tempRounds.length - 1].roundResult = result;
+      tempRounds[tempRounds.length - 1].completed = true;
+      this.setState({
+        rounds: tempRounds,
+        roundInProgress: false,
+      });
+    });
+
     this.hideDialog = this.hideDialog.bind(this);
-    this.addMessageToAppState = this.addMessageToAppState.bind(this);
+    this.updateParticipantResponseAndSendToServer =
+      this.updateParticipantResponseAndSendToServer.bind(this);
   }
+
+  updateParticipantResponseAndSendToServer(response) {
+    const tempRounds = this.state.rounds;
+    tempRounds[tempRounds.length - 1].participantResponse = response;
+    tempRounds[tempRounds.length - 1].isWaitingRoundResult = true;
+
+    const key1 = tempRounds[tempRounds.length - 1].keys[0].keyValue;
+    const key2 = tempRounds[tempRounds.length - 1].keys[1].keyValue;
+    tempRounds[tempRounds.length - 1].valueToServer =
+      this.calculateXORValueToBroadcast(key1, key2, response);
+
+    sendParticipantResponse(tempRounds[tempRounds.length - 1].valueToServer);
+
+    this.setState({
+      rounds: tempRounds,
+    });
+  }
+
+  calculateXORValueToBroadcast(key1, key2, participantChoice) {
+    const sum = key1 + key2 + participantChoice;
+    return sum % 2;
+  }
+
+  reset() {
+    this.setState({
+      events: [],
+      roundNumber: 0,
+      rounds: [],
+    });
+    sessionStorage.clear();
+  }
+
 
   hideDialog(e) {
     if (e) {
@@ -106,22 +139,12 @@ export default class AppComponent extends Component {
     });
   }
 
-  addMessageToAppState(eventType, myEvent) {
-    const tempRounds = this.state.rounds;
-    tempRounds[tempRounds.length - 1].participantResponse = myEvent;
-
-    this.setState({
-      allEvents: this.state.allEvents.concat({ eventType, myEvent }),
-      rounds: tempRounds,
-    });
-  }
-
   render() {
     return (
       <div className="title">
-        DC-net simulation App
-        {this.state.allEvents &&
-          this.state.allEvents.map((ob) => {
+        DC-net simulation App - {this.state.whoami && <span>You are: {this.state.whoami}</span>}
+        {this.state.events &&
+          this.state.events.map((ob) => {
             if (ob.eventType === 'CONNECTION') {
               return <ConnectionComponent message={ob.myEvent} />;
             }
@@ -135,7 +158,7 @@ export default class AppComponent extends Component {
         {this.state.showDiagol &&
           <DialogComponent
             hideDialog={this.hideDialog}
-            addMessageToAppState={this.addMessageToAppState}
+            updateParticipantResponseAndSendToServer={this.updateParticipantResponseAndSendToServer}
           />
         }
       </div>

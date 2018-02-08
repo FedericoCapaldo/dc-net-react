@@ -1,40 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { sendParticipantResponse } from './socket-api';
 
 export default class DialogComponent extends Component {
     constructor(props) {
       super(props);
     }
 
+    // merger following two functions
     positiveClick(event) {
-      // XOR with 1 reverses the result
-      const result = this.prepareParticipantResponse(1);
-      this.props.addMessageToAppState(
-        'PARTICIPANT-RESPONSE',
-        result
-      );
-      sendParticipantResponse(result);
+      this.props.updateParticipantResponseAndSendToServer(1);
       this.props.hideDialog(event);
     }
 
     negativeClick(event) {
-      const result = this.prepareParticipantResponse(0);
-      this.props.addMessageToAppState(
-        'PARTICIPANT-RESPONSE',
-        result
-      );
-      sendParticipantResponse(result);
+      this.props.updateParticipantResponseAndSendToServer(0);
       this.props.hideDialog(event);
-    }
-
-    prepareParticipantResponse(startValue) {
-      let result = startValue;
-      for (let x = 0; x < sessionStorage.length; ++x) {
-        result += parseInt(sessionStorage.getItem(sessionStorage.key(x)));
-      }
-      result = result % 2;
-      return result;
     }
 
     render() {
@@ -70,5 +50,5 @@ export default class DialogComponent extends Component {
 
 DialogComponent.propTypes = {
   hideDialog: PropTypes.function,
-  addMessageToAppState: PropTypes.function,
+  updateParticipantResponseAndSendToServer: PropTypes.function,
 };

@@ -7,16 +7,16 @@ import { recordEvent,
          reset,
          clearKeys } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
-import KeyGenerationComponent from './KeyGenerationComponent';
 import DialogComponent from './DialogComponent';
-import ParticipantResponseComponent from './ParticipantResponseComponent';
 import RoundComponent from './RoundComponent';
+import { Round } from './Round';
 
 export default class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       allEvents: [],
+      rounds: [],
       showDiagol: false,
       generated: false,
       roundNumber: 0,
@@ -27,12 +27,26 @@ export default class AppComponent extends Component {
       this.setState({
         allEvents: this.state.allEvents.concat({ eventType, myEvent }),
       });
+
+      if (eventType === 'ROUND-RESULT') {
+        const tempRounds = this.state.rounds;
+        tempRounds[tempRounds.length - 1].waiting = false;
+        tempRounds[tempRounds.length - 1].completed = true;
+        tempRounds[tempRounds.length - 1].finalResult = myEvent;
+        this.setState({
+          rounds: tempRounds,
+          roundInProgress: false,
+        });
+        console.log(this.state);
+      }
     });
 
     startRound((eventType) => {
       this.setState({
         allEvents: this.state.allEvents.concat({ eventType }),
         roundNumber: ++this.state.roundNumber,
+        rounds: [...this.state.rounds, new Round(this.state.roundNumber)],
+        roundInProgress: true,
       });
     });
 
@@ -50,6 +64,7 @@ export default class AppComponent extends Component {
       this.setState({
         allEvents: [],
         roundNumber: 0,
+        rounds: [],
       });
       sessionStorage.clear();
     });
@@ -62,7 +77,16 @@ export default class AppComponent extends Component {
         });
       } else if (sessionStorage.length > 2) {
         // consider taking actions if there are more than 2 keys.
+        console.warn('MORE THAN 2 KEYS PRESENT');
       }
+
+      const tempRounds = this.state.rounds;
+      tempRounds[tempRounds.length - 1].keys =
+        [...tempRounds[tempRounds.length - 1].keys, { keyName, keyValue }];
+
+      this.setState({
+        rounds: tempRounds,
+      });
     });
 
     clearKeys(() => {
@@ -83,8 +107,12 @@ export default class AppComponent extends Component {
   }
 
   addMessageToAppState(eventType, myEvent) {
+    const tempRounds = this.state.rounds;
+    tempRounds[tempRounds.length - 1].participantResponse = myEvent;
+
     this.setState({
       allEvents: this.state.allEvents.concat({ eventType, myEvent }),
+      rounds: tempRounds,
     });
   }
 
@@ -96,17 +124,12 @@ export default class AppComponent extends Component {
           this.state.allEvents.map((ob) => {
             if (ob.eventType === 'CONNECTION') {
               return <ConnectionComponent message={ob.myEvent} />;
-            } else if (ob.eventType === 'START-ROUND') {
-              return <RoundComponent number={this.state.roundNumber} />;
-            } else if (ob.eventType === 'KEY-GENERATION') {
-              return <KeyGenerationComponent generated={this.state.generated} />;
-            } else if (ob.eventType === 'PARTICIPANT-RESPONSE') {
-              return <ParticipantResponseComponent message={ob.myEvent} />;
-            } else if (ob.eventType === 'FINAL-ANSWER-PROGRESS') {
-              return <p>{ob.myEvent}</p>;
-            } else if (ob.eventType === 'ROUND-RESULT') {
-              return <p>{ob.myEvent}</p>;
             }
+          })
+        }
+        {this.state.rounds &&
+          this.state.rounds.map((round) => {
+            return <RoundComponent round={round} />;
           })
         }
         {this.state.showDiagol &&

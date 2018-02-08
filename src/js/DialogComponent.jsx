@@ -12,7 +12,7 @@ export default class DialogComponent extends Component {
       const result = this.prepareParticipantResponse(1);
       this.props.addMessageToAppState(
         'PARTICIPANT-RESPONSE',
-        `The message that you will send to the server is ${result}`
+        result
       );
       sendParticipantResponse(result);
       this.props.hideDialog(event);
@@ -22,7 +22,7 @@ export default class DialogComponent extends Component {
       const result = this.prepareParticipantResponse(0);
       this.props.addMessageToAppState(
         'PARTICIPANT-RESPONSE',
-        `The message that you will send to the server is ${result}`
+        result
       );
       sendParticipantResponse(result);
       this.props.hideDialog(event);

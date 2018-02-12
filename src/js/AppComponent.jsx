@@ -4,10 +4,9 @@ import { sendParticipantResponse,
          recordEvent,
          startRound,
          startGeneratingKey,
-         roundResult,
+         receiveRoundResult,
          hideChoiceDialog,
-         receiveKey,
-         clearKeys } from './socket-api';
+         receiveKey } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
 import RoundComponent from './RoundComponent';
@@ -78,11 +77,7 @@ export default class AppComponent extends Component {
       this.hideDialog();
     });
 
-    clearKeys(() => {
-      sessionStorage.clear();
-    });
-
-    roundResult((result) => {
+    receiveRoundResult((result) => {
       const tempRounds = this.state.rounds;
       tempRounds[tempRounds.length - 1].isWaitingRoundResult = false;
       tempRounds[tempRounds.length - 1].roundResult = result;
@@ -100,15 +95,16 @@ export default class AppComponent extends Component {
 
   updateParticipantResponseAndSendToServer(response) {
     const tempRounds = this.state.rounds;
-    tempRounds[tempRounds.length - 1].participantResponse = response;
-    tempRounds[tempRounds.length - 1].isWaitingRoundResult = true;
+    const currentRound = tempRounds[tempRounds.length - 1];
+    currentRound.participantResponse = response;
+    currentRound.isWaitingRoundResult = true;
 
-    const key1 = tempRounds[tempRounds.length - 1].keys[0].keyValue;
-    const key2 = tempRounds[tempRounds.length - 1].keys[1].keyValue;
-    tempRounds[tempRounds.length - 1].valueToServer =
+    const key1 = currentRound.keys[0].keyValue;
+    const key2 = currentRound.keys[1].keyValue;
+    currentRound.valueToServer =
       this.calculateXORValueToBroadcast(key1, key2, response);
 
-    sendParticipantResponse(tempRounds[tempRounds.length - 1].valueToServer);
+    sendParticipantResponse(currentRound.valueToServer);
 
     this.setState({
       rounds: tempRounds,
@@ -126,7 +122,7 @@ export default class AppComponent extends Component {
       roundNumber: 0,
       rounds: [],
     });
-    sessionStorage.clear();
+    this.hideDialog();
   }
 
 

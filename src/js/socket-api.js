@@ -49,19 +49,7 @@ function hideChoiceDialog(callback) {
   });
 }
 
-function reset(callback) {
-  socket.on('reset', () => {
-    callback();
-  });
-}
-
-function clearKeys(callback) {
-  socket.on('clear-keys', () => {
-    callback();
-  });
-}
-
-function roundResult(callback) {
+function receiveRoundResult(callback) {
   socket.on('round-result', (result) => {
     callback(result);
   });
@@ -71,9 +59,7 @@ export { onConnection, onDisconnection,
          recordEvent,
          startRound,
          startGeneratingKey,
-         roundResult,
+         receiveRoundResult,
          hideChoiceDialog,
          receiveKey,
-         sendParticipantResponse,
-         reset,
-         clearKeys };
+         sendParticipantResponse };

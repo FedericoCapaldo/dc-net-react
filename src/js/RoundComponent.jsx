@@ -22,14 +22,14 @@ export default class RoundComponent extends Component {
       {this.props.round.valueToServer !== -1 &&
         <p>Your result to the server is {this.props.round.valueToServer}</p>
       }
-      {this.props.round.isWaitingRoundResult &&
-        <p>Waiting for other clients result...</p>
-      }
       {this.props.round.messageRejected &&
         <p>
           WANRING: Another client already sent a message in this round.
           Your message will not be flipped.
         </p>
+      }
+      {this.props.round.isWaitingRoundResult &&
+        <p>Waiting for other clients result...</p>
       }
       {this.props.round.roundResult !== -1 &&
         <p>Round result is {this.props.round.roundResult}</p>

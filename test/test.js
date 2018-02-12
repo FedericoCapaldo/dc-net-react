@@ -24,14 +24,14 @@ describe('Helper functions', function() {
       let clients = [{name: "Alice", id: "xiu67324f", roundResult: 1},
                      {name: "Bob", id: "chrqe9712bn", roundResult: -1},
                      {name: "Charlie", id: "chrqe9712bn", roundResult: 0}];
-      expect(chatHelpers.areRoundsResultsReceived(clients)).to.equal(false);
+      expect(chatHelpers.areRoundMessagesReceived(clients)).to.equal(false);
     });
 
     it('should return true if all values are received on the server', function() {
       let clients = [{name: "Alice", id: "xiu67324f", roundResult: 1},
                      {name: "Bob", id: "chrqe9712bn", roundResult: 0},
                      {name: "Charlie", id: "chrqe9712bn", roundResult: 0}];
-      expect(chatHelpers.areRoundsResultsReceived(clients)).to.equal(true);
+      expect(chatHelpers.areRoundMessagesReceived(clients)).to.equal(true);
     })
   });
 

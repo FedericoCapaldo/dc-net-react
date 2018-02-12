@@ -21,9 +21,9 @@ describe('Helper functions', function() {
 
   describe('Check All Round Results are present', function() {
     it('should return false if some values are not received', function() {
-      let clients = [{name: "Alice", id: "xiu67324f", roundResult: 1},
-                     {name: "Bob", id: "chrqe9712bn", roundResult: -1},
-                     {name: "Charlie", id: "chrqe9712bn", roundResult: 0}];
+      let clients = [{name: "Alice", id: "xiu67324f", roundMessage: 1},
+                     {name: "Bob", id: "chrqe9712bn", roundMessage: -1},
+                     {name: "Charlie", id: "chrqe9712bn", roundMessage: 0}];
       expect(chatHelpers.areRoundMessagesReceived(clients)).to.equal(false);
     });
 

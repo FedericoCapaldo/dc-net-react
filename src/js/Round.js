@@ -5,6 +5,7 @@ const Round = function Round(number) {
   this.participantResponse = -1;
   this.valueToServer = -1;
   this.isWaitingRoundResult = false;
+  this.messageRejected = false;
   this.roundResult = -1;
   this.completed = false;
 };

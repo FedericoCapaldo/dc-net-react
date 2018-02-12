@@ -49,6 +49,12 @@ function hideChoiceDialog(callback) {
   });
 }
 
+function messageRejectedWarning(callback) {
+  socket.on('message-rejected', () => {
+    callback();
+  });
+}
+
 function receiveRoundResult(callback) {
   socket.on('round-result', (result) => {
     callback(result);
@@ -62,4 +68,5 @@ export { onConnection, onDisconnection,
          receiveRoundResult,
          hideChoiceDialog,
          receiveKey,
+         messageRejectedWarning,
          sendParticipantResponse };

@@ -6,6 +6,7 @@ import { sendParticipantResponse,
          startGeneratingKey,
          receiveRoundResult,
          hideChoiceDialog,
+         messageRejectedWarning,
          receiveKey } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
@@ -23,6 +24,12 @@ export default class AppComponent extends Component {
       roundInProgress: false,
       whoami: '',
     };
+
+    recordEvent((eventType, myEvent) => {
+      this.setState({
+        events: this.state.events.concat({ eventType, myEvent }),
+      });
+    });
 
     onConnection((name) => {
       this.reset();
@@ -67,21 +74,24 @@ export default class AppComponent extends Component {
       // consider taking actions if there are more than 2 keys.
     });
 
-    recordEvent((eventType, myEvent) => {
-      this.setState({
-        events: this.state.events.concat({ eventType, myEvent }),
-      });
-    });
-
     hideChoiceDialog(() => {
       this.hideDialog();
     });
 
+    messageRejectedWarning(() => {
+      const tempRounds = this.state.rounds;
+      tempRounds[tempRounds.length - 1].messageRejected = true;
+      this.setState({
+        rounds: tempRounds,
+      });
+    });
+
     receiveRoundResult((result) => {
       const tempRounds = this.state.rounds;
-      tempRounds[tempRounds.length - 1].isWaitingRoundResult = false;
-      tempRounds[tempRounds.length - 1].roundResult = result;
-      tempRounds[tempRounds.length - 1].completed = true;
+      const currentRound = tempRounds[tempRounds.length - 1];
+      currentRound.isWaitingRoundResult = false;
+      currentRound.roundResult = result;
+      currentRound.completed = true;
       this.setState({
         rounds: tempRounds,
         roundInProgress: false,

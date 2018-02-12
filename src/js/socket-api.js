@@ -37,15 +37,15 @@ function startGeneratingKey(callback) {
   });
 }
 
-function hideChoiceDialog(callback) {
-  socket.on('hide-dialog', () => {
-    callback();
+function receiveKey(callback) {
+  socket.on('key-generated', (keyName, keyValue) => {
+    callback(keyName, keyValue);
   });
 }
 
-function receivedKeys(callback) {
-  socket.on('key-exchange', (keyName, keyValue) => {
-    callback(keyName, keyValue);
+function hideChoiceDialog(callback) {
+  socket.on('hide-dialog', () => {
+    callback();
   });
 }
 
@@ -73,7 +73,7 @@ export { onConnection, onDisconnection,
          startGeneratingKey,
          roundResult,
          hideChoiceDialog,
-         receivedKeys,
+         receiveKey,
          sendParticipantResponse,
          reset,
          clearKeys };

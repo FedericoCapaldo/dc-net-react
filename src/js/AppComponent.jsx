@@ -6,7 +6,7 @@ import { sendParticipantResponse,
          startGeneratingKey,
          roundResult,
          hideChoiceDialog,
-         receivedKeys,
+         receiveKey,
          clearKeys } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
@@ -49,7 +49,7 @@ export default class AppComponent extends Component {
       });
     });
 
-    receivedKeys((keyName, keyValue) => {
+    receiveKey((keyName, keyValue) => {
       const tempRounds = this.state.rounds;
       const currentRound = tempRounds[tempRounds.length - 1];
       currentRound.keys = [...currentRound.keys, { keyName, keyValue }];

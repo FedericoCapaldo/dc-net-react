@@ -17,11 +17,11 @@ export default class AppComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentRoundIndex: 0,
       events: [],
-      rounds: [],
-      showDiagol: false,
-      roundNumber: 0,
       roundInProgress: false,
+      roundNumber: 0,
+      showDiagol: false,
       whoami: '',
     };
 
@@ -41,34 +41,35 @@ export default class AppComponent extends Component {
 
     startRound(() => {
       this.setState({
+        currentRoundIndex: this.state.events.length,
         roundNumber: ++this.state.roundNumber,
-        rounds: [...this.state.rounds, new Round(this.state.roundNumber)],
+        events: [...this.state.events, new Round(this.state.roundNumber)],
         roundInProgress: true,
       });
     });
 
     startGeneratingKey(() => {
-      const tempRounds = this.state.rounds;
-      tempRounds[tempRounds.length - 1].isWaitingKeys = true;
+      const tempEvents = this.state.events;
+      tempEvents[this.state.currentRoundIndex].isWaitingKeys = true;
       this.setState({
-        rounds: tempRounds,
+        events: tempEvents,
       });
     });
 
     receiveKey((keyName, keyValue) => {
-      const tempRounds = this.state.rounds;
-      const currentRound = tempRounds[tempRounds.length - 1];
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
       currentRound.keys = [...currentRound.keys, { keyName, keyValue }];
 
       if (currentRound.keys.length === 2) {
         currentRound.isWaitingKeys = false;
         this.setState({
-          rounds: tempRounds,
+          events: tempEvents,
           showDiagol: true,
         });
       } else if (currentRound.keys < 2) {
         this.setState({
-          rounds: tempRounds,
+          events: tempEvents,
         });
       }
       // consider taking actions if there are more than 2 keys.
@@ -79,21 +80,21 @@ export default class AppComponent extends Component {
     });
 
     messageRejectedWarning(() => {
-      const tempRounds = this.state.rounds;
-      tempRounds[tempRounds.length - 1].messageRejected = true;
+      const tempEvents = this.state.events;
+      tempEvents[this.state.currentRoundIndex].messageRejected = true;
       this.setState({
-        rounds: tempRounds,
+        events: tempEvents,
       });
     });
 
     receiveRoundResult((result) => {
-      const tempRounds = this.state.rounds;
-      const currentRound = tempRounds[tempRounds.length - 1];
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
       currentRound.isWaitingRoundResult = false;
       currentRound.roundResult = result;
       currentRound.completed = true;
       this.setState({
-        rounds: tempRounds,
+        events: tempEvents,
         roundInProgress: false,
       });
     });
@@ -104,8 +105,8 @@ export default class AppComponent extends Component {
   }
 
   updateParticipantResponseAndSendToServer(response) {
-    const tempRounds = this.state.rounds;
-    const currentRound = tempRounds[tempRounds.length - 1];
+    const tempEvents = this.state.events;
+    const currentRound = tempEvents[this.state.currentRoundIndex];
     currentRound.participantResponse = response;
     currentRound.isWaitingRoundResult = true;
 
@@ -117,7 +118,7 @@ export default class AppComponent extends Component {
     sendParticipantResponse(currentRound.valueToServer);
 
     this.setState({
-      rounds: tempRounds,
+      events: tempEvents,
     });
   }
 
@@ -130,7 +131,6 @@ export default class AppComponent extends Component {
     this.setState({
       events: [],
       roundNumber: 0,
-      rounds: [],
     });
     this.hideDialog();
   }
@@ -151,14 +151,11 @@ export default class AppComponent extends Component {
         DC-net simulation App - {this.state.whoami && <span>You are: {this.state.whoami}</span>}
         {this.state.events &&
           this.state.events.map((ob) => {
-            if (ob.eventType === 'CONNECTION') {
+            if (ob.constructor.name === 'Round') {
+              return <RoundComponent round={ob} />;
+            } else if (ob.eventType === 'CONNECTION') {
               return <ConnectionComponent message={ob.myEvent} />;
             }
-          })
-        }
-        {this.state.rounds &&
-          this.state.rounds.map((round) => {
-            return <RoundComponent round={round} />;
           })
         }
         {this.state.showDiagol &&

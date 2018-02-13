@@ -36,7 +36,9 @@ function startGeneratingKey(callback) {
 }
 
 function receiveKey(callback) {
-  socket.on('key-generated', (keyName, keyValue) => {
+  socket.on('key-generated', (key) => {
+    const keyName = key[0];
+    const keyValue = key[1];
     callback(keyName, keyValue);
   });
 }

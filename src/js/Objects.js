@@ -8,6 +8,8 @@ const Round = function Round(number) {
   this.messageRejected = false;
   this.roundResult = -1;
   this.completed = false;
+  this.aborted = false;
+  this.abortReason = '';
 };
 
 const Connection = function Connection(name, type) {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { connectionEvent,
+import { abortRoundInProgress,
+         connectionEvent,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
@@ -19,7 +20,6 @@ export default class AppComponent extends Component {
     this.state = {
       currentRoundIndex: 0,
       events: [],
-      roundInProgress: false,
       roundNumber: 0,
       showDiagol: false,
       whoami: '',
@@ -43,7 +43,6 @@ export default class AppComponent extends Component {
         currentRoundIndex: this.state.events.length,
         roundNumber: ++this.state.roundNumber,
         events: [...this.state.events, new Round(this.state.roundNumber)],
-        roundInProgress: true,
       });
     });
 
@@ -94,7 +93,16 @@ export default class AppComponent extends Component {
       currentRound.completed = true;
       this.setState({
         events: tempEvents,
-        roundInProgress: false,
+      });
+    });
+
+    abortRoundInProgress((abortReason) => {
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
+      currentRound.aborted = true;
+      currentRound.abortReason = abortReason;
+      this.setState({
+        events: tempEvents,
       });
     });
 

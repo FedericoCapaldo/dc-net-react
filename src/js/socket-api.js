@@ -61,7 +61,14 @@ function receiveRoundResult(callback) {
   });
 }
 
-export { connectionEvent,
+function abortRoundInProgress(callback) {
+  socket.on('abort-round', (abortReason) => {
+    callback(abortReason);
+  });
+}
+
+export { abortRoundInProgress,
+         connectionEvent,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,

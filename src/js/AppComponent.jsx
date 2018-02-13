@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { sendParticipantResponse,
-         onConnection,
-         recordEvent,
-         startRound,
-         startGeneratingKey,
-         receiveRoundResult,
+import { connectionEvent,
+         connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
-         receiveKey } from './socket-api';
+         receiveKey,
+         receiveRoundResult,
+         sendParticipantResponse,
+         startGeneratingKey,
+         startRound } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
 import RoundComponent from './RoundComponent';
-import { Round } from './Round';
+import { Round, Connection } from './Objects';
 
 export default class AppComponent extends Component {
   constructor(props) {
@@ -25,17 +25,16 @@ export default class AppComponent extends Component {
       whoami: '',
     };
 
-    recordEvent((eventType, myEvent) => {
+    connectionSetup((name) => {
+      this.reset();
       this.setState({
-        events: this.state.events.concat({ eventType, myEvent }),
+        whoami: name,
       });
     });
 
-    onConnection((name) => {
-      this.reset();
-      // const connectionMessage = 'New user \'' + name + 'connected';
+    connectionEvent((name, type) => {
       this.setState({
-        whoami: name,
+        events: this.state.events.concat(new Connection(name, type)),
       });
     });
 
@@ -153,8 +152,8 @@ export default class AppComponent extends Component {
           this.state.events.map((ob) => {
             if (ob.constructor.name === 'Round') {
               return <RoundComponent round={ob} />;
-            } else if (ob.eventType === 'CONNECTION') {
-              return <ConnectionComponent message={ob.myEvent} />;
+            } else if (ob.constructor.name === 'Connection') {
+              return <ConnectionComponent data={ob} />;
             }
           })
         }

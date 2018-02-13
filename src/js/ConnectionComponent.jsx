@@ -8,11 +8,18 @@ export default class ConnectionComponent extends Component {
 
   render() {
     return (
-      <p>{this.props.message}</p>
+      <div>
+        {this.props.data.type === 'connection' &&
+          <p>New user {this.props.data.name} connected to the network</p>
+        }
+        {this.props.data.type === 'disconnection' &&
+          <p>{this.props.data.name} disconnected from the network</p>
+        }
+      </div>
     );
   }
 }
 
 ConnectionComponent.propTypes = {
-  message: PropTypes.string,
+  data: PropTypes.object,
 };

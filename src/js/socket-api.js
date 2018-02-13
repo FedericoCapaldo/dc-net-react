@@ -7,21 +7,19 @@ function sendParticipantResponse(result) {
 }
 
 // events received from severs
-function recordEvent(callback) {
-  socket.on('system-message', (type, output) => {
-    callback(type, output);
-  });
-}
-
-function onConnection(callback) {
-  socket.on('connecting', (name) => {
+function connectionSetup(callback) {
+  socket.on('connection-setup', (name) => {
     callback(name);
   });
 }
 
-function onDisconnection(callback) {
-  socket.on('disconnecting', (name) => {
-    callback(name);
+function connectionEvent(callback) {
+  socket.on('client-connection', (name) => {
+    callback(name, 'connection');
+  });
+
+  socket.on('client-disconnection', (name) => {
+    callback(name, 'disconnection');
   });
 }
 
@@ -61,12 +59,12 @@ function receiveRoundResult(callback) {
   });
 }
 
-export { onConnection, onDisconnection,
-         recordEvent,
-         startRound,
-         startGeneratingKey,
-         receiveRoundResult,
+export { connectionEvent,
+         connectionSetup,
          hideChoiceDialog,
-         receiveKey,
          messageRejectedWarning,
-         sendParticipantResponse };
+         receiveKey,
+         receiveRoundResult,
+         sendParticipantResponse,
+         startGeneratingKey,
+         startRound };

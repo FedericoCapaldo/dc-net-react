@@ -10,4 +10,9 @@ const Round = function Round(number) {
   this.completed = false;
 };
 
-export { Round };
+const Connection = function Connection(name, type) {
+  this.name = name;
+  this.type = type;
+};
+
+export { Round, Connection };

@@ -7,6 +7,18 @@ function sendParticipantResponse(result) {
 }
 
 // events received from severs
+function timeToConnection(callback) {
+  socket.on('timer', (secondsLeft) => {
+    callback(secondsLeft);
+  });
+}
+
+function waitingConnections(callback) {
+  socket.on('waiting-connections', (leftToWait) => {
+    callback(leftToWait);
+  });
+}
+
 function connectionSetup(callback) {
   socket.on('connection-setup', (name) => {
     callback(name);
@@ -76,4 +88,6 @@ export { abortRoundInProgress,
          receiveRoundResult,
          sendParticipantResponse,
          startGeneratingKey,
-         startRound };
+         startRound,
+         timeToConnection,
+         waitingConnections };

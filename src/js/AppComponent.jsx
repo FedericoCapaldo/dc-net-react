@@ -8,7 +8,9 @@ import { abortRoundInProgress,
          receiveRoundResult,
          sendParticipantResponse,
          startGeneratingKey,
-         startRound } from './socket-api';
+         startRound,
+         timeToConnection,
+         waitingConnections } from './socket-api';
 import ConnectionComponent from './ConnectionComponent';
 import DialogComponent from './DialogComponent';
 import RoundComponent from './RoundComponent';
@@ -20,16 +22,26 @@ export default class AppComponent extends Component {
     this.state = {
       currentRoundIndex: 0,
       events: [],
+      leftToWait: 0,
       roundNumber: 0,
+      secondsLeft: 0,
       showDiagol: false,
       whoami: '',
     };
+
+    timeToConnection((secondsLeft) => {
+      this.setState({ secondsLeft });
+    });
 
     connectionSetup((name) => {
       this.reset();
       this.setState({
         whoami: name,
       });
+    });
+
+    waitingConnections((leftToWait) => {
+      this.setState({ leftToWait });
     });
 
     connectionEvent((name, type) => {
@@ -156,6 +168,12 @@ export default class AppComponent extends Component {
     return (
       <div className="title">
         DC-net simulation App - {this.state.whoami && <span>You are: {this.state.whoami}</span>}
+        {this.state.secondsLeft > 0 &&
+          <p>{this.state.secondsLeft} seconds before communications starts</p>
+        }
+        {this.state.leftToWait > 0 &&
+          <p>{this.state.leftToWait} extra clients needed to start communication</p>
+        }
         {this.state.events &&
           this.state.events.map((ob) => {
             if (ob.constructor.name === 'Round') {

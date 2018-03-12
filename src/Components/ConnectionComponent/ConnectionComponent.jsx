@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
 export default class ConnectionComponent extends Component {
   constructor(props) {
@@ -8,12 +9,17 @@ export default class ConnectionComponent extends Component {
 
   render() {
     return (
-      <div>
+      <div className="connection-container">
+        <i className="fa fa-plug" aria-hidden="true"></i>
         {this.props.data.type === 'connection' &&
-          <p>New user {this.props.data.name} connected to the network</p>
+          <span className="connection-message">
+            New user {this.props.data.name} connected to the network
+          </span>
         }
         {this.props.data.type === 'disconnection' &&
-          <p>{this.props.data.name} disconnected from the network</p>
+          <span className="disconnection-message">
+            {this.props.data.name} disconnected from the network
+          </span>
         }
       </div>
     );

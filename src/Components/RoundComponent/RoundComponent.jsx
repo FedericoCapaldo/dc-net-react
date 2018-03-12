@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
 export default class RoundComponent extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export default class RoundComponent extends Component {
     } else {
       return (
         <div>
-        <p>Round {props.round.number}</p>
+        <p className="round-title">Round {props.round.number}</p>
         {props.round.isWaitingKeys &&
           <p>Waiting to receive secret keys</p>
         }
@@ -50,7 +51,7 @@ export default class RoundComponent extends Component {
 
   render() {
     return (
-      <div id="round">
+      <div className="round-container">
         {this.roundContent(this.props)}
       </div>
     );

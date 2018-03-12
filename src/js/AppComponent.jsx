@@ -11,9 +11,10 @@ import { abortRoundInProgress,
          startRound,
          timeToConnection,
          waitingConnections } from './socket-api';
-import ConnectionComponent from './ConnectionComponent';
+import ConnectionComponent from '../Components/ConnectionComponent/ConnectionComponent';
 import DialogComponent from './DialogComponent';
-import RoundComponent from './RoundComponent';
+import RoundComponent from '../Components/RoundComponent/RoundComponent';
+
 import { Round, Connection } from './Objects';
 
 export default class AppComponent extends Component {

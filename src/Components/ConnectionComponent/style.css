@@ -1,0 +1,23 @@
+.connection-container {
+  padding-left: 10px;
+  margin: 5px;
+  border: 1px solid red;
+  border-radius: 4px;
+}
+
+.connection-message {
+  /* relative to bootstrap */
+  margin-left: 5px;
+  margin-top: 5px;
+
+  margin-bottom: 5px;
+}
+
+.disconnection-message {
+  /* relative to bootstrap */
+  margin-left: 5px;
+  margin-top: 5px;
+
+  color: red;
+  margin-bottom: 5px;
+}

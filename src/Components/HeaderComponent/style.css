@@ -8,6 +8,7 @@
   padding-left: 10px;
   padding-top: 10px;
   color: #f6f1ed;
+  min-width: 575px;
 }
 
 .header-title {

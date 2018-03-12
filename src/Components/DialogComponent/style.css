@@ -1,0 +1,19 @@
+.dialog-container {
+  background-color: #6a5750;
+}
+
+.question {
+  text-align: center;
+  color: #f6f1ed;
+}
+
+.choice-button-container {
+  height: 75px;
+  text-align:center;
+  line-height:75px;
+  min-width: 120px;
+}
+
+.choice-button {
+  vertical-align: middle;
+}

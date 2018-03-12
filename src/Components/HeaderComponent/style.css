@@ -1,0 +1,15 @@
+.header-container {
+  top: 0px;
+  position: fixed;
+  background-color: #30231d;
+  width: 100%;
+  z-index: 1;
+  display: block;
+  padding-left: 10px;
+  padding-top: 10px;
+  color: #f6f1ed;
+}
+
+.header-title {
+
+}

@@ -12,8 +12,9 @@ import { abortRoundInProgress,
          timeToConnection,
          waitingConnections } from './socket-api';
 import ConnectionComponent from '../Components/ConnectionComponent/ConnectionComponent';
-import DialogComponent from './DialogComponent';
+import DialogComponent from '../Components/DialogComponent/DialogComponent';
 import RoundComponent from '../Components/RoundComponent/RoundComponent';
+import HeaderComponent from '../Components/HeaderComponent/HeaderComponent';
 
 import { Round, Connection } from './Objects';
 
@@ -124,6 +125,14 @@ export default class AppComponent extends Component {
       this.updateParticipantResponseAndSendToServer.bind(this);
   }
 
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+  }
+
   updateParticipantResponseAndSendToServer(response) {
     const tempEvents = this.state.events;
     const currentRound = tempEvents[this.state.currentRoundIndex];
@@ -167,29 +176,35 @@ export default class AppComponent extends Component {
 
   render() {
     return (
-      <div className="title">
-        DC-net simulation App - {this.state.whoami && <span>You are: {this.state.whoami}</span>}
-        {this.state.secondsLeft > 0 &&
-          <p>{this.state.secondsLeft} seconds before communications starts</p>
-        }
-        {this.state.leftToWait > 0 &&
-          <p>{this.state.leftToWait} extra clients needed to start communication</p>
-        }
-        {this.state.events &&
-          this.state.events.map((ob) => {
-            if (ob.constructor.name === 'Round') {
-              return <RoundComponent round={ob} />;
-            } else if (ob.constructor.name === 'Connection') {
-              return <ConnectionComponent data={ob} />;
-            }
-          })
-        }
-        {this.state.showDiagol &&
-          <DialogComponent
-            hideDialog={this.hideDialog}
-            updateParticipantResponseAndSendToServer={this.updateParticipantResponseAndSendToServer}
-          />
-        }
+      <div>
+        <HeaderComponent
+          whoami={this.state.whoami}
+          secondsLeft={this.state.secondsLeft}
+          leftToWait={this.state.leftToWait}
+        />
+        <div className="content">
+          {this.state.events &&
+            this.state.events.map((ob) => {
+              if (ob.constructor.name === 'Round') {
+                return <RoundComponent round={ob} />;
+              } else if (ob.constructor.name === 'Connection') {
+                return <ConnectionComponent data={ob} />;
+              }
+            })
+          }
+          {this.state.showDiagol &&
+            <DialogComponent
+              hideDialog={this.hideDialog}
+              updateParticipantResponseAndSendToServer=
+                {this.updateParticipantResponseAndSendToServer}
+            />
+          }
+          <div id="dummy-component-for-scroll"
+            style={{ float: 'left', clear: 'both' }}
+            ref={(el) => { this.messagesEnd = el; }}
+          >
+          </div>
+        </div>
       </div>
     );
   }

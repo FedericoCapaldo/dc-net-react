@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
 export default class DialogComponent extends Component {
     constructor(props) {
@@ -19,7 +20,7 @@ export default class DialogComponent extends Component {
 
     render() {
       return (
-        <div className="row fixed-bottom secret-bit-question">
+        <div className="dialog-container row fixed-bottom secret-bit-question">
           <div className="col-12">
             <h2 className="question">Would you like to pay for the dinner?</h2>
           </div>

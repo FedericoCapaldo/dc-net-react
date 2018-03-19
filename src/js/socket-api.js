@@ -71,6 +71,14 @@ function receiveKey(callback) {
   });
 }
 
+function receiveMessageKeys(callback) {
+  socket.on('message-keys-generated', (key) => {
+    const keyName = key[0];
+    const arrayOfNkeys = key[1];
+    callback(keyName, arrayOfNkeys);
+  });
+}
+
 function hideChoiceDialog(callback) {
   socket.on('hide-dialog', () => {
     callback();
@@ -100,6 +108,7 @@ export { abortRoundInProgress,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
+         receiveMessageKeys,
          receiveKey,
          receiveRoundResult,
          sendParticipantResponse,

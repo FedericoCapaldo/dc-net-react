@@ -4,6 +4,7 @@ import { abortRoundInProgress,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
+         receiveMessageKeys,
          receiveKey,
          receiveRoundResult,
          sendParticipantResponse,
@@ -37,6 +38,7 @@ export default class AppComponent extends Component {
       amISender: false,
       message: '',
       messageLength: 0,
+      messageKeys: [],
     };
 
     timeToConnection((secondsLeft) => {
@@ -139,6 +141,12 @@ export default class AppComponent extends Component {
         });
       }
       // consider taking actions if there are more than 2 keys.
+    });
+
+    receiveMessageKeys((keyName, arrayOfNkeys) => {
+      this.setState({
+        messageKeys: [...this.state.messageKeys, { keyname: arrayOfNkeys }],
+      });
     });
 
     hideChoiceDialog(() => {
@@ -272,6 +280,7 @@ export default class AppComponent extends Component {
       amISender: false,
       message: '',
       messageLength: 0,
+      messageKeys: [],
     });
   }
 

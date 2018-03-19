@@ -68,11 +68,26 @@ export default class AppComponent extends Component {
 
     startRound(() => {
       const newRound = new Round(this.state.roundNumber);
-      this.setState({
-        currentRoundIndex: this.state.events.length,
-        roundNumber: ++this.state.roundNumber,
-        events: [...this.state.events, newRound],
-      });
+      const tempKeys = this.state.messageKeys;
+      let keyName = tempKeys[0].keyName;
+      let keyValue = tempKeys[0].keys.shift();
+      newRound.keys = [{ keyName, keyValue }];
+      keyName = tempKeys[1].keyName;
+      keyValue = tempKeys[1].keys.shift();
+      newRound.keys = [...newRound.keys, { keyName, keyValue }];
+      if (isNaN(keyValue)) {
+        this.setState({
+          events: [...this.state.events, new Message('we are done!')],
+        });
+      } else {
+        this.setState({
+          currentRoundIndex: this.state.events.length,
+          roundNumber: ++this.state.roundNumber,
+          events: [...this.state.events, newRound],
+          messageKeys: tempKeys,
+        });
+        this.calculateAndSendResult();
+      }
     });
 
     startVotingRound(() => {
@@ -127,14 +142,14 @@ export default class AppComponent extends Component {
               --countDownTimer;
               this.setState({ secondsLeft: countDownTimer });
               if (countDownTimer <= 0) {
-                this.calculateResultForServerAutomatically(0);
+                this.calculateLengthRoundResultAndSendToServer();
                 clearInterval(myInterval);
               }
             }, 1000);
             this.setState({ events: tempEvents });
           }
         } else { // normal communication round
-          this.calculateResultForServerAutomatically(0);
+          this.calculateLengthRoundResultAndSendToServer();
           this.setState({
             events: tempEvents,
           });
@@ -147,9 +162,9 @@ export default class AppComponent extends Component {
       // consider taking actions if there are more than 2 keys.
     });
 
-    receiveMessageKeys((keyName, arrayOfNkeys) => {
+    receiveMessageKeys((keyName, keys) => {
       this.setState({
-        messageKeys: [...this.state.messageKeys, { keyname: arrayOfNkeys }],
+        messageKeys: [...this.state.messageKeys, { keyName, keys }],
       });
     });
 
@@ -265,7 +280,7 @@ export default class AppComponent extends Component {
     });
   }
 
-  calculateResultForServerAutomatically() {
+  calculateLengthRoundResultAndSendToServer() {
     const tempEvents = this.state.events;
     const currentRound = tempEvents[this.state.currentRoundIndex];
     // currentRound.participantResponse = 0;
@@ -283,6 +298,29 @@ export default class AppComponent extends Component {
     });
   }
 
+  calculateAndSendResult() {
+    const tempEvents = this.state.events;
+    const currentRound = tempEvents[this.state.currentRoundIndex];
+    currentRound.isWaitingRoundResult = true;
+    const key1 = currentRound.keys[0].keyValue;
+    const key2 = currentRound.keys[1].keyValue;
+
+    let message = this.state.message;
+    if (this.state.amISender) {
+      const letter = message.split('').shift();
+      message = message.substr(1);
+      currentRound.valueToServer =
+        this.calculateOppositeValueToBroadcast(key1, key2, letter.charCodeAt(0));
+    } else {
+      currentRound.valueToServer =
+        this.calculateOppositeValueToBroadcast(key1, key2, 0);
+    }
+
+    this.setState({
+      events: tempEvents,
+      message,
+    });
+  }
 
   calculateXORValueToBroadcast(key1, key2, participantChoice) {
     const sum = key1 + key2 + participantChoice;

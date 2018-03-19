@@ -97,6 +97,12 @@ function receiveRoundResult(callback) {
   });
 }
 
+function receiveLengthRoundResult(callback) {
+  socket.on('length-round-result', (messageLength) => {
+    callback(messageLength);
+  });
+}
+
 function abortRoundInProgress(callback) {
   socket.on('abort-round', (abortReason) => {
     callback(abortReason);
@@ -117,6 +123,7 @@ export { abortRoundInProgress,
          receiveGeneralMessage,
          receiveMessageKeys,
          receiveKey,
+         receiveLengthRoundResult,
          receiveRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,

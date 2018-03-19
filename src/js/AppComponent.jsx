@@ -7,6 +7,7 @@ import { abortRoundInProgress,
          receiveGeneralMessage,
          receiveMessageKeys,
          receiveKey,
+         receiveLengthRoundResult,
          receiveRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,
@@ -177,6 +178,18 @@ export default class AppComponent extends Component {
       currentRound.completed = true;
       this.setState({
         events: tempEvents,
+      });
+    });
+
+    receiveLengthRoundResult((messageLength) => {
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
+      currentRound.isWaitingRoundResult = false;
+      currentRound.roundResult = messageLength;
+      currentRound.completed = true;
+      this.setState({
+        events: tempEvents,
+        messageLength,
       });
     });
 

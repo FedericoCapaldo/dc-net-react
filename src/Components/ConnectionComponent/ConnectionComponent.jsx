@@ -13,7 +13,7 @@ export default class ConnectionComponent extends Component {
         <i className="fa fa-plug" aria-hidden="true"></i>
         {this.props.data.type === 'connection' &&
           <span className="connection-message">
-            New user {this.props.data.name} connected to the network
+            {this.props.data.name} connected to the network
           </span>
         }
         {this.props.data.type === 'disconnection' &&

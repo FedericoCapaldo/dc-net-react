@@ -4,6 +4,7 @@ import { abortRoundInProgress,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
+         receiveGeneralMessage,
          receiveMessageKeys,
          receiveKey,
          receiveRoundResult,
@@ -19,9 +20,11 @@ import ConnectionComponent from '../Components/ConnectionComponent/ConnectionCom
 import DialogComponent from '../Components/DialogComponent/DialogComponent';
 import RoundComponent from '../Components/RoundComponent/RoundComponent';
 import HeaderComponent from '../Components/HeaderComponent/HeaderComponent';
+import UserMessageInputComponent from
+  '../Components/UserMessageInputComponent/UserMessageInputComponent';
 import MessageComponent from '../Components/MessageComponent/MessageComponent';
 
-import { Round, Connection } from './Objects';
+import { Round, Connection, Message } from './Objects';
 
 export default class AppComponent extends Component {
   constructor(props) {
@@ -58,7 +61,7 @@ export default class AppComponent extends Component {
 
     connectionEvent((name, type) => {
       this.setState({
-        events: this.state.events.concat(new Connection(name, type)),
+        events: [...this.state.events, new Connection(name, type)],
       });
     });
 
@@ -184,6 +187,12 @@ export default class AppComponent extends Component {
       currentRound.abortReason = abortReason;
       this.setState({
         events: tempEvents,
+      });
+    });
+
+    receiveGeneralMessage((message) => {
+      this.setState({
+        events: [...this.state.events, new Message(message)],
       });
     });
 
@@ -318,11 +327,13 @@ export default class AppComponent extends Component {
                 return <RoundComponent round={ob} />;
               } else if (ob.constructor.name === 'Connection') {
                 return <ConnectionComponent data={ob} />;
+              } else if (ob.constructor.name === 'Message') {
+                return <MessageComponent message={ob} />;
               }
             })
           }
           {this.state.showMessageDialog &&
-            <MessageComponent
+            <UserMessageInputComponent
               sendMessageLengthinResponse={this.sendMessageLengthinResponse}
               hideMessageInputDialog={this.hideMessageInputDialog}
             />

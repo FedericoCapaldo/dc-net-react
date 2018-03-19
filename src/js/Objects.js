@@ -17,4 +17,8 @@ const Connection = function Connection(name, type) {
   this.type = type;
 };
 
-export { Round, Connection };
+const Message = function Message(message) {
+  this.message = message;
+};
+
+export { Round, Connection, Message };

@@ -103,11 +103,18 @@ function abortRoundInProgress(callback) {
   });
 }
 
+function receiveGeneralMessage(callback) {
+  socket.on('general-message', (message) => {
+    callback(message);
+  });
+}
+
 export { abortRoundInProgress,
          connectionEvent,
          connectionSetup,
          hideChoiceDialog,
          messageRejectedWarning,
+         receiveGeneralMessage,
          receiveMessageKeys,
          receiveKey,
          receiveRoundResult,

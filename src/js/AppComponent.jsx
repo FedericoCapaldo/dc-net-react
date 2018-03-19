@@ -7,14 +7,18 @@ import { abortRoundInProgress,
          receiveKey,
          receiveRoundResult,
          sendParticipantResponse,
+         sendParticipantLengthRoundResponse,
          startGeneratingKey,
          startRound,
+         startVotingRound,
+         startLengthMesuramentRound,
          timeToConnection,
          waitingConnections } from './socket-api';
 import ConnectionComponent from '../Components/ConnectionComponent/ConnectionComponent';
 import DialogComponent from '../Components/DialogComponent/DialogComponent';
 import RoundComponent from '../Components/RoundComponent/RoundComponent';
 import HeaderComponent from '../Components/HeaderComponent/HeaderComponent';
+import MessageComponent from '../Components/MessageComponent/MessageComponent';
 
 import { Round, Connection } from './Objects';
 
@@ -28,7 +32,11 @@ export default class AppComponent extends Component {
       roundNumber: 0,
       secondsLeft: 0,
       showDiagol: false,
+      showMessageDialog: false,
       whoami: '',
+      amISender: false,
+      message: '',
+      messageLength: 0,
     };
 
     timeToConnection((secondsLeft) => {
@@ -53,10 +61,31 @@ export default class AppComponent extends Component {
     });
 
     startRound(() => {
+      const newRound = new Round(this.state.roundNumber);
       this.setState({
         currentRoundIndex: this.state.events.length,
         roundNumber: ++this.state.roundNumber,
-        events: [...this.state.events, new Round(this.state.roundNumber)],
+        events: [...this.state.events, newRound],
+      });
+    });
+
+    startVotingRound(() => {
+      const newRound = new Round(this.state.roundNumber);
+      newRound.isVotingRound = true;
+      this.setState({
+        currentRoundIndex: this.state.events.length,
+        roundNumber: ++this.state.roundNumber,
+        events: [...this.state.events, newRound],
+      });
+    });
+
+    startLengthMesuramentRound(() => {
+      const newRound = new Round(this.state.roundNumber);
+      newRound.isLengthMesuramentRound = true;
+      this.setState({
+        currentRoundIndex: this.state.events.length,
+        roundNumber: ++this.state.roundNumber,
+        events: [...this.state.events, newRound],
       });
     });
 
@@ -75,10 +104,35 @@ export default class AppComponent extends Component {
 
       if (currentRound.keys.length === 2) {
         currentRound.isWaitingKeys = false;
-        this.setState({
-          events: tempEvents,
-          showDiagol: true,
-        });
+        if (currentRound.isVotingRound) {
+          this.setState({
+            events: tempEvents,
+            showDiagol: true,
+          });
+        } else if (currentRound.isLengthMesuramentRound) {
+          if (this.state.amISender) {
+            this.setState({
+              events: tempEvents,
+              showMessageDialog: true,
+            });
+          } else {
+            let countDownTimer = 4;
+            const myInterval = setInterval(() => {
+              --countDownTimer;
+              this.setState({ secondsLeft: countDownTimer });
+              if (countDownTimer <= 0) {
+                this.calculateResultForServerAutomatically(0);
+                clearInterval(myInterval);
+              }
+            }, 1000);
+            this.setState({ events: tempEvents });
+          }
+        } else { // normal communication round
+          this.calculateResultForServerAutomatically(0);
+          this.setState({
+            events: tempEvents,
+          });
+        }
       } else if (currentRound.keys < 2) {
         this.setState({
           events: tempEvents,
@@ -91,10 +145,15 @@ export default class AppComponent extends Component {
       this.hideDialog();
     });
 
+    // hideMessageDialog(() => {
+    //   this.hideMessageInputDialog();
+    // });
+
     messageRejectedWarning(() => {
       const tempEvents = this.state.events;
       tempEvents[this.state.currentRoundIndex].messageRejected = true;
       this.setState({
+        amISender: false,
         events: tempEvents,
       });
     });
@@ -121,8 +180,10 @@ export default class AppComponent extends Component {
     });
 
     this.hideDialog = this.hideDialog.bind(this);
+    this.hideMessageInputDialog = this.hideMessageInputDialog.bind(this);
     this.updateParticipantResponseAndSendToServer =
       this.updateParticipantResponseAndSendToServer.bind(this);
+    this.sendMessageLengthinResponse = this.sendMessageLengthinResponse.bind(this);
   }
 
   componentDidUpdate() {
@@ -134,9 +195,12 @@ export default class AppComponent extends Component {
   }
 
   updateParticipantResponseAndSendToServer(response) {
+    if (response) {
+      this.setState({ amISender: true });
+    }
     const tempEvents = this.state.events;
     const currentRound = tempEvents[this.state.currentRoundIndex];
-    currentRound.participantResponse = response;
+    // currentRound.participantResponse = response;
     currentRound.isWaitingRoundResult = true;
 
     const key1 = currentRound.keys[0].keyValue;
@@ -151,17 +215,64 @@ export default class AppComponent extends Component {
     });
   }
 
+  sendMessageLengthinResponse(message, messageLength) {
+    const tempEvents = this.state.events;
+    const currentRound = tempEvents[this.state.currentRoundIndex];
+    // currentRound.participantResponse = response;
+    currentRound.isWaitingRoundResult = true;
+
+    const key1 = currentRound.keys[0].keyValue;
+    const key2 = currentRound.keys[1].keyValue;
+    currentRound.valueToServer =
+      this.calculateOppositeValueToBroadcast(key1, key2, messageLength);
+
+    sendParticipantLengthRoundResponse(currentRound.valueToServer);
+
+    this.setState({
+      message,
+      messageLength,
+      events: tempEvents,
+    });
+  }
+
+  calculateResultForServerAutomatically() {
+    const tempEvents = this.state.events;
+    const currentRound = tempEvents[this.state.currentRoundIndex];
+    // currentRound.participantResponse = 0;
+    currentRound.isWaitingRoundResult = true;
+    const key1 = currentRound.keys[0].keyValue;
+    const key2 = currentRound.keys[1].keyValue;
+
+    currentRound.valueToServer =
+      this.calculateOppositeValueToBroadcast(key1, key2, 0);
+
+    sendParticipantLengthRoundResponse(currentRound.valueToServer);
+
+    this.setState({
+      events: tempEvents,
+    });
+  }
+
+
   calculateXORValueToBroadcast(key1, key2, participantChoice) {
     const sum = key1 + key2 + participantChoice;
     return sum % 2;
+  }
+
+  calculateOppositeValueToBroadcast(key1, key2, participantChoice) {
+    return key1 + key2 + participantChoice;
   }
 
   reset() {
     this.setState({
       events: [],
       roundNumber: 0,
+      showMessageDialog: false,
+      showDiagol: false,
+      amISender: false,
+      message: '',
+      messageLength: 0,
     });
-    this.hideDialog();
   }
 
 
@@ -171,6 +282,15 @@ export default class AppComponent extends Component {
     }
     this.setState({
       showDiagol: false,
+    });
+  }
+
+  hideMessageInputDialog(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    this.setState({
+      showMessageDialog: false,
     });
   }
 
@@ -191,6 +311,12 @@ export default class AppComponent extends Component {
                 return <ConnectionComponent data={ob} />;
               }
             })
+          }
+          {this.state.showMessageDialog &&
+            <MessageComponent
+              sendMessageLengthinResponse={this.sendMessageLengthinResponse}
+              hideMessageInputDialog={this.hideMessageInputDialog}
+            />
           }
           {this.state.showDiagol &&
             <DialogComponent

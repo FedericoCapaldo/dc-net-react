@@ -6,6 +6,10 @@ function sendParticipantResponse(result) {
   socket.emit('participant-response', result);
 }
 
+function sendParticipantLengthRoundResponse(result) {
+  socket.emit('participant-length-response', result);
+}
+
 // events received from severs
 function timeToConnection(callback) {
   socket.on('timer', (secondsLeft) => {
@@ -32,6 +36,18 @@ function connectionEvent(callback) {
 
   socket.on('client-disconnection', (name) => {
     callback(name, 'disconnection');
+  });
+}
+
+function startVotingRound(callback) {
+  socket.on('start-voting-round', () => {
+    callback();
+  });
+}
+
+function startLengthMesuramentRound(callback) {
+  socket.on('start-length-round', () => {
+    callback();
   });
 }
 
@@ -87,7 +103,10 @@ export { abortRoundInProgress,
          receiveKey,
          receiveRoundResult,
          sendParticipantResponse,
+         sendParticipantLengthRoundResponse,
          startGeneratingKey,
          startRound,
+         startVotingRound,
+         startLengthMesuramentRound,
          timeToConnection,
          waitingConnections };

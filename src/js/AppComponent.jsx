@@ -9,8 +9,11 @@ import { abortRoundInProgress,
          receiveKey,
          receiveLengthRoundResult,
          receiveRoundResult,
+         receiveCommunicationRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,
+         sendParticipantCommunicationRoundResponse,
+         showCommunicatedMessage,
          startGeneratingKey,
          startRound,
          startVotingRound,
@@ -208,6 +211,32 @@ export default class AppComponent extends Component {
       });
     });
 
+    receiveCommunicationRoundResult((singleAsciiLetter) => {
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
+      currentRound.isWaitingRoundResult = false;
+      currentRound.roundResult = singleAsciiLetter;
+      currentRound.completed = true;
+
+      let message = this.state.message;
+      if (!this.state.amISender) {
+        const letter = String.fromCharCode(singleAsciiLetter);
+        message = message + letter;
+      }
+
+      this.setState({
+        events: tempEvents,
+        message,
+      });
+    });
+
+    showCommunicatedMessage(() => {
+      this.setState({
+        events: [...this.state.events,
+          new Message('Anonymous Message Received:' + this.state.message)],
+      });
+    });
+
     abortRoundInProgress((abortReason) => {
       const tempEvents = this.state.events;
       const currentRound = tempEvents[this.state.currentRoundIndex];
@@ -315,6 +344,8 @@ export default class AppComponent extends Component {
       currentRound.valueToServer =
         this.calculateOppositeValueToBroadcast(key1, key2, 0);
     }
+
+    sendParticipantCommunicationRoundResponse(currentRound.valueToServer);
 
     this.setState({
       events: tempEvents,

@@ -10,6 +10,10 @@ function sendParticipantLengthRoundResponse(result) {
   socket.emit('participant-length-response', result);
 }
 
+function sendParticipantCommunicationRoundResponse(result) {
+  socket.emit('participant-round-response', result);
+}
+
 // events received from severs
 function timeToConnection(callback) {
   socket.on('timer', (secondsLeft) => {
@@ -103,6 +107,12 @@ function receiveLengthRoundResult(callback) {
   });
 }
 
+function receiveCommunicationRoundResult(callback) {
+  socket.on('communication-round-result', (singleAsciiLetter) => {
+    callback(singleAsciiLetter);
+  });
+}
+
 function abortRoundInProgress(callback) {
   socket.on('abort-round', (abortReason) => {
     callback(abortReason);
@@ -112,6 +122,12 @@ function abortRoundInProgress(callback) {
 function receiveGeneralMessage(callback) {
   socket.on('general-message', (message) => {
     callback(message);
+  });
+}
+
+function showCommunicatedMessage(callback) {
+  socket.on('show-communicated-message', () => {
+    callback();
   });
 }
 
@@ -125,8 +141,11 @@ export { abortRoundInProgress,
          receiveKey,
          receiveLengthRoundResult,
          receiveRoundResult,
+         receiveCommunicationRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,
+         sendParticipantCommunicationRoundResponse,
+         showCommunicatedMessage,
          startGeneratingKey,
          startRound,
          startVotingRound,

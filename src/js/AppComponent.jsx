@@ -36,7 +36,7 @@ export default class AppComponent extends Component {
       currentRoundIndex: 0,
       events: [],
       leftToWait: 0,
-      roundNumber: 0,
+      roundNumber: 1,
       secondsToStart: 0,
       showDiagol: false,
       showMessageDialog: false,
@@ -65,29 +65,28 @@ export default class AppComponent extends Component {
     });
 
     startVotingRound(() => {
-      const newRound = new Round(this.state.roundNumber);
+      const newRound = new Round();
       newRound.isVotingRound = true;
       newRound.isWaitingKeys = true;
       this.setState({
         currentRoundIndex: this.state.events.length,
-        roundNumber: ++this.state.roundNumber,
         events: [...this.state.events, newRound],
       });
     });
 
     startLengthMesuramentRound(() => {
-      const newRound = new Round(this.state.roundNumber);
-      newRound.isLengthMesuramentRound = true;
+      const newRound = new Round();
+      newRound.isLengthRound = true;
       newRound.isWaitingKeys = true;
       this.setState({
         currentRoundIndex: this.state.events.length,
-        roundNumber: ++this.state.roundNumber,
         events: [...this.state.events, newRound],
       });
     });
 
     startCommunicationRound(() => {
-      const newRound = new Round(this.state.roundNumber);
+      const totalRoundNumbers = this.state.messageLength;
+      const newRound = new Round(this.state.roundNumber, totalRoundNumbers);
       const tempKeys = this.state.messageKeys;
       let keyName = tempKeys[0].keyName;
       let keyValue = tempKeys[0].keys.shift();
@@ -122,7 +121,7 @@ export default class AppComponent extends Component {
             events: tempEvents,
             showDiagol: true,
           });
-        } else if (currentRound.isLengthMesuramentRound) {
+        } else if (currentRound.isLengthRound) {
           if (this.state.amISender) {
             this.setState({
               events: tempEvents,
@@ -203,9 +202,13 @@ export default class AppComponent extends Component {
     });
 
     showCommunicatedMessage(() => {
+      const mes =
+        (this.state.amISender ? 'Anonymous Message sent: ' : 'Anonymous Message Received: ')
+        + this.state.message;
+
       this.setState({
-        events: [...this.state.events,
-          new Message('Anonymous Message Received:' + this.state.message)],
+        events: [...this.state.events, new Message(mes)],
+        roundNumber: 1,
       });
       this.resetEndOfRound();
     });
@@ -299,6 +302,7 @@ export default class AppComponent extends Component {
 
     this.setState({
       message,
+      messageCopy: message,
       messageLength,
       events: tempEvents,
     });
@@ -329,12 +333,11 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
 
-    let message = this.state.message;
+    let messageCopy = this.state.messageCopy;
     if (this.state.amISender) {
-      const letter = message.split('').shift();
-      message = message.substr(1);
       currentRound.valueToServer =
-        this.calculateOppositeValueToBroadcast(key1, key2, letter.charCodeAt(0));
+        this.calculateOppositeValueToBroadcast(key1, key2, messageCopy.charCodeAt(0));
+      messageCopy = messageCopy.substr(1);
     } else {
       currentRound.valueToServer =
         this.calculateOppositeValueToBroadcast(key1, key2, 0);
@@ -344,7 +347,7 @@ export default class AppComponent extends Component {
 
     this.setState({
       events: tempEvents,
-      message,
+      messageCopy,
     });
   }
 
@@ -360,7 +363,7 @@ export default class AppComponent extends Component {
   resetReconnection() {
     this.setState({
       events: [],
-      roundNumber: 0,
+      roundNumber: 1,
       showMessageDialog: false,
       showDiagol: false,
       amISender: false,

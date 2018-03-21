@@ -1,5 +1,6 @@
-const Round = function Round(number) {
+const Round = function Round(number = 0, totalRoundNumbers = 0) {
   this.number = number;
+  this.totalRoundNumbers = totalRoundNumbers;
   this.isWaitingKeys = false;
   this.keys = [];
   this.participantResponse = -1;

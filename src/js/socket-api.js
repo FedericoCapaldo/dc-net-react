@@ -2,8 +2,8 @@ import io from 'socket.io-client';
 const socket = io('localhost:9000');
 
 // events emitted by the components
-function sendParticipantResponse(result) {
-  socket.emit('participant-response', result);
+function sendParticipantVotingResponse(result) {
+  socket.emit('participant-voting-response', result);
 }
 
 function sendParticipantLengthRoundResponse(result) {
@@ -15,21 +15,15 @@ function sendParticipantCommunicationRoundResponse(result) {
 }
 
 // events received from severs
-function updateSecondsToStart(callback) {
-  socket.on('timer', (secondsToStart) => {
-    callback(secondsToStart);
+function connectionSetup(callback) {
+  socket.on('connection-setup', (name) => {
+    callback(name);
   });
 }
 
 function waitingConnections(callback) {
   socket.on('waiting-connections', (leftToWait) => {
     callback(leftToWait);
-  });
-}
-
-function connectionSetup(callback) {
-  socket.on('connection-setup', (name) => {
-    callback(name);
   });
 }
 
@@ -77,18 +71,6 @@ function receiveMessageKeys(callback) {
   });
 }
 
-function hideChoiceDialog(callback) {
-  socket.on('hide-dialog', () => {
-    callback();
-  });
-}
-
-function messageRejectedWarning(callback) {
-  socket.on('message-rejected', () => {
-    callback();
-  });
-}
-
 function receiveVotingRoundResult(callback) {
   socket.on('voting-round-result', (result) => {
     callback(result);
@@ -107,21 +89,39 @@ function receiveCommunicationRoundResult(callback) {
   });
 }
 
+function showCommunicatedMessage(callback) {
+  socket.on('show-communicated-message', () => {
+    callback();
+  });
+}
+
+function hideChoiceDialog(callback) {
+  socket.on('hide-dialog', () => {
+    callback();
+  });
+}
+
+function messageRejectedWarning(callback) {
+  socket.on('message-rejected', () => {
+    callback();
+  });
+}
+
 function abortRoundInProgress(callback) {
   socket.on('abort-round', (abortReason) => {
     callback(abortReason);
   });
 }
 
-function receiveGeneralMessage(callback) {
-  socket.on('general-message', (message) => {
-    callback(message);
+function updateSecondsToStart(callback) {
+  socket.on('timer', (secondsToStart) => {
+    callback(secondsToStart);
   });
 }
 
-function showCommunicatedMessage(callback) {
-  socket.on('show-communicated-message', () => {
-    callback();
+function receiveGeneralMessage(callback) {
+  socket.on('general-message', (message) => {
+    callback(message);
   });
 }
 
@@ -136,7 +136,7 @@ export { abortRoundInProgress,
          receiveLengthRoundResult,
          receiveVotingRoundResult,
          receiveCommunicationRoundResult,
-         sendParticipantResponse,
+         sendParticipantVotingResponse,
          sendParticipantLengthRoundResponse,
          sendParticipantCommunicationRoundResponse,
          showCommunicatedMessage,

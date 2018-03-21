@@ -10,7 +10,7 @@ import { abortRoundInProgress,
          receiveLengthRoundResult,
          receiveVotingRoundResult,
          receiveCommunicationRoundResult,
-         sendParticipantResponse,
+         sendParticipantVotingResponse,
          sendParticipantLengthRoundResponse,
          sendParticipantCommunicationRoundResponse,
          showCommunicatedMessage,
@@ -277,7 +277,7 @@ export default class AppComponent extends Component {
     currentRound.valueToServer =
       this.calculateXORValueToBroadcast(key1, key2, response);
 
-    sendParticipantResponse(currentRound.valueToServer);
+    sendParticipantVotingResponse(currentRound.valueToServer);
 
     this.setState({
       events: tempEvents,

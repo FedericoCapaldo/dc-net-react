@@ -53,7 +53,7 @@ export default class AppComponent extends Component {
     });
 
     connectionSetup((name) => {
-      this.reset();
+      this.resetReconnection();
       this.setState({
         whoami: name,
       });
@@ -235,6 +235,7 @@ export default class AppComponent extends Component {
         events: [...this.state.events,
           new Message('Anonymous Message Received:' + this.state.message)],
       });
+      this.resetEndOfRound();
     });
 
     abortRoundInProgress((abortReason) => {
@@ -362,7 +363,7 @@ export default class AppComponent extends Component {
     return key1 + key2 + participantChoice;
   }
 
-  reset() {
+  resetReconnection() {
     this.setState({
       events: [],
       roundNumber: 0,
@@ -375,6 +376,14 @@ export default class AppComponent extends Component {
     });
   }
 
+  resetEndOfRound() {
+    this.setState({
+      amISender: false,
+      message: '',
+      messageLength: 0,
+      messageKeys: [],
+    });
+  }
 
   hideDialog(e) {
     if (e) {

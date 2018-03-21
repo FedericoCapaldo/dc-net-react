@@ -6,19 +6,18 @@ import { abortRoundInProgress,
          messageRejectedWarning,
          receiveGeneralMessage,
          receiveMessageKeys,
-         receiveKey,
+         receiveRoundKey,
          receiveLengthRoundResult,
-         receiveRoundResult,
+         receiveVotingRoundResult,
          receiveCommunicationRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,
          sendParticipantCommunicationRoundResponse,
          showCommunicatedMessage,
-         startGeneratingKey,
-         startRound,
+         startCommunicationRound,
          startVotingRound,
          startLengthMesuramentRound,
-         timeToConnection,
+         updateSecondsToStart,
          waitingConnections } from './socket-api';
 import ConnectionComponent from '../Components/ConnectionComponent/ConnectionComponent';
 import DialogComponent from '../Components/DialogComponent/DialogComponent';
@@ -38,7 +37,7 @@ export default class AppComponent extends Component {
       events: [],
       leftToWait: 0,
       roundNumber: 0,
-      secondsLeft: 0,
+      secondsToStart: 0,
       showDiagol: false,
       showMessageDialog: false,
       whoami: '',
@@ -47,10 +46,6 @@ export default class AppComponent extends Component {
       messageLength: 0,
       messageKeys: [],
     };
-
-    timeToConnection((secondsLeft) => {
-      this.setState({ secondsLeft });
-    });
 
     connectionSetup((name) => {
       this.resetReconnection();
@@ -69,7 +64,29 @@ export default class AppComponent extends Component {
       });
     });
 
-    startRound(() => {
+    startVotingRound(() => {
+      const newRound = new Round(this.state.roundNumber);
+      newRound.isVotingRound = true;
+      newRound.isWaitingKeys = true;
+      this.setState({
+        currentRoundIndex: this.state.events.length,
+        roundNumber: ++this.state.roundNumber,
+        events: [...this.state.events, newRound],
+      });
+    });
+
+    startLengthMesuramentRound(() => {
+      const newRound = new Round(this.state.roundNumber);
+      newRound.isLengthMesuramentRound = true;
+      newRound.isWaitingKeys = true;
+      this.setState({
+        currentRoundIndex: this.state.events.length,
+        roundNumber: ++this.state.roundNumber,
+        events: [...this.state.events, newRound],
+      });
+    });
+
+    startCommunicationRound(() => {
       const newRound = new Round(this.state.roundNumber);
       const tempKeys = this.state.messageKeys;
       let keyName = tempKeys[0].keyName;
@@ -93,35 +110,7 @@ export default class AppComponent extends Component {
       }
     });
 
-    startVotingRound(() => {
-      const newRound = new Round(this.state.roundNumber);
-      newRound.isVotingRound = true;
-      this.setState({
-        currentRoundIndex: this.state.events.length,
-        roundNumber: ++this.state.roundNumber,
-        events: [...this.state.events, newRound],
-      });
-    });
-
-    startLengthMesuramentRound(() => {
-      const newRound = new Round(this.state.roundNumber);
-      newRound.isLengthMesuramentRound = true;
-      this.setState({
-        currentRoundIndex: this.state.events.length,
-        roundNumber: ++this.state.roundNumber,
-        events: [...this.state.events, newRound],
-      });
-    });
-
-    startGeneratingKey(() => {
-      const tempEvents = this.state.events;
-      tempEvents[this.state.currentRoundIndex].isWaitingKeys = true;
-      this.setState({
-        events: tempEvents,
-      });
-    });
-
-    receiveKey((keyName, keyValue) => {
+    receiveRoundKey((keyName, keyValue) => {
       const tempEvents = this.state.events;
       const currentRound = tempEvents[this.state.currentRoundIndex];
       currentRound.keys = [...currentRound.keys, { keyName, keyValue }];
@@ -143,7 +132,7 @@ export default class AppComponent extends Component {
             let countDownTimer = 4;
             const myInterval = setInterval(() => {
               --countDownTimer;
-              this.setState({ secondsLeft: countDownTimer });
+              this.setState({ secondsToStart: countDownTimer });
               if (countDownTimer <= 0) {
                 this.calculateLengthRoundResultAndSendToServer();
                 clearInterval(myInterval);
@@ -171,24 +160,7 @@ export default class AppComponent extends Component {
       });
     });
 
-    hideChoiceDialog(() => {
-      this.hideDialog();
-    });
-
-    // hideMessageDialog(() => {
-    //   this.hideMessageInputDialog();
-    // });
-
-    messageRejectedWarning(() => {
-      const tempEvents = this.state.events;
-      tempEvents[this.state.currentRoundIndex].messageRejected = true;
-      this.setState({
-        amISender: false,
-        events: tempEvents,
-      });
-    });
-
-    receiveRoundResult((result) => {
+    receiveVotingRoundResult((result) => {
       const tempEvents = this.state.events;
       const currentRound = tempEvents[this.state.currentRoundIndex];
       currentRound.isWaitingRoundResult = false;
@@ -238,6 +210,16 @@ export default class AppComponent extends Component {
       this.resetEndOfRound();
     });
 
+
+    messageRejectedWarning(() => {
+      const tempEvents = this.state.events;
+      tempEvents[this.state.currentRoundIndex].messageRejected = true;
+      this.setState({
+        amISender: false,
+        events: tempEvents,
+      });
+    });
+
     abortRoundInProgress((abortReason) => {
       const tempEvents = this.state.events;
       const currentRound = tempEvents[this.state.currentRoundIndex];
@@ -246,6 +228,18 @@ export default class AppComponent extends Component {
       this.setState({
         events: tempEvents,
       });
+    });
+
+    hideChoiceDialog(() => {
+      this.hideDialog();
+    });
+
+    // hideMessageDialog(() => {
+    //   this.hideMessageInputDialog();
+    // });
+
+    updateSecondsToStart((secondsToStart) => {
+      this.setState({ secondsToStart });
     });
 
     receiveGeneralMessage((message) => {
@@ -408,7 +402,7 @@ export default class AppComponent extends Component {
       <div>
         <HeaderComponent
           whoami={this.state.whoami}
-          secondsLeft={this.state.secondsLeft}
+          secondsToStart={this.state.secondsToStart}
           leftToWait={this.state.leftToWait}
         />
         <div className="content">

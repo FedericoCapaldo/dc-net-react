@@ -15,9 +15,9 @@ function sendParticipantCommunicationRoundResponse(result) {
 }
 
 // events received from severs
-function timeToConnection(callback) {
-  socket.on('timer', (secondsLeft) => {
-    callback(secondsLeft);
+function updateSecondsToStart(callback) {
+  socket.on('timer', (secondsToStart) => {
+    callback(secondsToStart);
   });
 }
 
@@ -55,20 +55,14 @@ function startLengthMesuramentRound(callback) {
   });
 }
 
-function startRound(callback) {
-  socket.on('start-round', () => {
+function startCommunicationRound(callback) {
+  socket.on('start-communication-round', () => {
     callback();
   });
 }
 
-function startGeneratingKey(callback) {
-  socket.on('generating-keys', () => {
-    callback();
-  });
-}
-
-function receiveKey(callback) {
-  socket.on('key-generated', (key) => {
+function receiveRoundKey(callback) {
+  socket.on('round-key-generated', (key) => {
     const keyName = key[0];
     const keyValue = key[1];
     callback(keyName, keyValue);
@@ -95,8 +89,8 @@ function messageRejectedWarning(callback) {
   });
 }
 
-function receiveRoundResult(callback) {
-  socket.on('round-result', (result) => {
+function receiveVotingRoundResult(callback) {
+  socket.on('voting-round-result', (result) => {
     callback(result);
   });
 }
@@ -138,17 +132,16 @@ export { abortRoundInProgress,
          messageRejectedWarning,
          receiveGeneralMessage,
          receiveMessageKeys,
-         receiveKey,
+         receiveRoundKey,
          receiveLengthRoundResult,
-         receiveRoundResult,
+         receiveVotingRoundResult,
          receiveCommunicationRoundResult,
          sendParticipantResponse,
          sendParticipantLengthRoundResponse,
          sendParticipantCommunicationRoundResponse,
          showCommunicatedMessage,
-         startGeneratingKey,
-         startRound,
+         startCommunicationRound,
          startVotingRound,
          startLengthMesuramentRound,
-         timeToConnection,
+         updateSecondsToStart,
          waitingConnections };

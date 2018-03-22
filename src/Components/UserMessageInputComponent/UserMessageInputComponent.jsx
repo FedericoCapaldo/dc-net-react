@@ -8,18 +8,48 @@ export default class UserMessageInputComponent extends Component {
     this.state = {
       message: '',
       messageLength: 0,
+      reasonInvalid: '',
+      disabledButton: false,
     };
     this.sendMessage = this.sendMessage.bind(this);
   }
 
   updateMessage(e) {
     e.preventDefault();
-    const m = e.target.value;
-    const len = m.length;
-    this.setState({
-      message: m,
-      messageLength: len,
-    });
+    const message = e.target.value.trim();
+    const messageLength = message.length;
+
+    if (this.validate(message)) {
+      this.setState({
+        message,
+        messageLength,
+        reasonInvalid: '',
+        disabledButton: false,
+      });
+    }
+  }
+
+  validate(message) {
+    if (message.length === 0) {
+      this.setState({
+        reasonInvalid: 'Message cannot be empty',
+        disabledButton: true,
+      });
+      return false;
+    }
+
+    // check if it is ASCII
+    for (let x = 0; x < message.length; x++) {
+      if (message.charCodeAt(x) > 255) {
+        this.setState({
+          reasonInvalid: 'Message is not ASCII encoded',
+          disabledButton: true,
+        });
+        return false;
+      }
+    }
+
+    return true;
   }
 
   sendMessage() {
@@ -29,28 +59,49 @@ export default class UserMessageInputComponent extends Component {
     }
   }
 
+  checkToSendMessage(e) {
+    if (e.key === 'Enter' && this.validate(this.state.message)) {
+      this.sendMessage();
+    }
+  }
+
   render() {
     return (
       <div className="user_input-container row fixed-bottom">
         <div className="col-12 user_input-question-container">
           <h2 className="user_input-question">Please insert message to send:</h2>
         </div>
-        <div className="offset-3 col-sm-5">
-          <input
-            type="text"
-            name="fname"
-            className="user_input-textbox"
-            onChange={this.updateMessage.bind(this)}
-          />
+        <div className="col-12 user_input-body">
+          <div className="row">
+            <div className="offset-3 col-5">
+              <input
+                type="text"
+                name="fname"
+                className="user_input-textbox"
+                onChange={this.updateMessage.bind(this)}
+                onKeyPress={this.checkToSendMessage.bind(this)}
+              />
+            </div>
+            <div className="col-4">
+              <button
+                type="button"
+                className="choice-button btn btn-lg"
+                onClick={this.sendMessage}
+                disabled={this.state.disabledButton}
+              >
+                SEND
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="col-sm-3">
-          <button
-            type="button"
-            className="choice-button btn btn-lg"
-            onClick={this.sendMessage}
-          >
-            SEND
-          </button>
+        <div className="col-12">
+          { this.state.reasonInvalid.length > 0 &&
+            <div className="col-12 user_input-invalid_reason-container">
+              <span className="user_input-invalid_reason">
+                {this.state.reasonInvalid}
+              </span>
+            </div>
+          }
         </div>
       </div>
     );

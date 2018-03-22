@@ -31,7 +31,7 @@ var config = {
       include: __dirname + '/src/'
     }],
     loaders: [{
-      test: /\.jsx?$/,
+      test: /\.jsx?$|\.js$/,
       include: path.join(__dirname, 'src'),
       loader: "babel-loader",
       exclude: [nodeModulesPath]
@@ -39,6 +39,9 @@ var config = {
       test: /\.scss$/,
       include: path.join(__dirname, 'src'),
       loader: ExtractTextPlugin.extract('style-loader', 'css!autoprefixer-loader?browsers=last 2 version!sass')
+    }, {
+      test: /\.css$/,
+      loader: "style-loader!css-loader"
     }]
   },
   plugins: [

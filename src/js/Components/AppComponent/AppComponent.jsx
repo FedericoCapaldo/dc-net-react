@@ -18,16 +18,17 @@ import { abortRoundInProgress,
          startVotingRound,
          startLengthMesuramentRound,
          updateSecondsToStart,
-         waitingConnections } from './socket-api';
-import ConnectionComponent from '../Components/ConnectionComponent/ConnectionComponent';
-import DialogComponent from '../Components/DialogComponent/DialogComponent';
-import RoundComponent from '../Components/RoundComponent/RoundComponent';
-import HeaderComponent from '../Components/HeaderComponent/HeaderComponent';
+         waitingConnections } from '../../socket-api';
+import ConnectionComponent from '../ConnectionComponent/ConnectionComponent';
+import DialogComponent from '../DialogComponent/DialogComponent';
+import RoundComponent from '../RoundComponent/RoundComponent';
+import HeaderComponent from '../HeaderComponent/HeaderComponent';
 import UserMessageInputComponent from
-  '../Components/UserMessageInputComponent/UserMessageInputComponent';
-import MessageComponent from '../Components/MessageComponent/MessageComponent';
+  '../UserMessageInputComponent/UserMessageInputComponent';
+import MessageComponent from '../MessageComponent/MessageComponent';
 
-import { Round, Connection, Message } from './Objects';
+import { Round, Connection, Message } from '../../Objects';
+import './style.css';
 
 export default class AppComponent extends Component {
   constructor(props) {
@@ -408,7 +409,7 @@ export default class AppComponent extends Component {
           secondsToStart={this.state.secondsToStart}
           leftToWait={this.state.leftToWait}
         />
-        <div className="content">
+        <div className="app-body">
           {this.state.events &&
             this.state.events.map((ob) => {
               if (ob.constructor.name === 'Round') {

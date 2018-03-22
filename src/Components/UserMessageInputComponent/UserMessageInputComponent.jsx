@@ -32,7 +32,7 @@ export default class UserMessageInputComponent extends Component {
   render() {
     return (
       <div className="user_input-container row fixed-bottom">
-        <div className="col-12">
+        <div className="col-12 user_input-question-container">
           <h2 className="user_input-question">Please insert message to send:</h2>
         </div>
         <div className="offset-3 col-sm-5">

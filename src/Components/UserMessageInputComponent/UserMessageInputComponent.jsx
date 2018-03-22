@@ -16,10 +16,10 @@ export default class UserMessageInputComponent extends Component {
 
   updateMessage(e) {
     e.preventDefault();
-    const message = e.target.value.trim();
+    const message = this.removeExtraSpaces(e.target.value);
     const messageLength = message.length;
 
-    if (this.validate(message)) {
+    if (this.isValid(message)) {
       this.setState({
         message,
         messageLength,
@@ -29,7 +29,11 @@ export default class UserMessageInputComponent extends Component {
     }
   }
 
-  validate(message) {
+  removeExtraSpaces(inputMessage) {
+    return inputMessage.trim().replace(/ +(?= )/g, '');
+  }
+
+  isValid(message) {
     if (message.length === 0) {
       this.setState({
         reasonInvalid: 'Message cannot be empty',
@@ -60,7 +64,7 @@ export default class UserMessageInputComponent extends Component {
   }
 
   checkToSendMessage(e) {
-    if (e.key === 'Enter' && this.validate(this.state.message)) {
+    if (e.key === 'Enter' && this.isValid(this.state.message)) {
       this.sendMessage();
     }
   }

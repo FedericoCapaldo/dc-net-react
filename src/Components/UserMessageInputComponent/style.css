@@ -1,0 +1,21 @@
+.user_input-container {
+  background-color: #6a5750;
+  min-width: 575px;
+  height: 125px;
+}
+
+.user_input-question-container {
+    height: 0px;
+    margin-bottom: -30px;
+    min-width: 575px;
+}
+
+.user_input-question {
+  text-align: center;
+  color: #f6f1ed;
+}
+
+.user_input-textbox {
+  width: 100%;
+  height: 48px;
+}

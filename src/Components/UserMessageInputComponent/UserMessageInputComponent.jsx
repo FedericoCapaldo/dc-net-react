@@ -31,18 +31,27 @@ export default class UserMessageInputComponent extends Component {
 
   render() {
     return (
-      <div>
-        <br/>
-        <p>MESSAGE DIALOG</p>
-        <input type="text" name="fname" onChange={this.updateMessage.bind(this)}/>
-        <button
-          type="button"
-          id="yes-payer"
-          className="choice-button btn btn-success btn-lg"
-          onClick={this.sendMessage}
-        >
-        </button>
-        <br/>
+      <div className="user_input-container row fixed-bottom">
+        <div className="col-12">
+          <h2 className="user_input-question">Please insert message to send:</h2>
+        </div>
+        <div className="offset-3 col-sm-5">
+          <input
+            type="text"
+            name="fname"
+            className="user_input-textbox"
+            onChange={this.updateMessage.bind(this)}
+          />
+        </div>
+        <div className="col-sm-3">
+          <button
+            type="button"
+            className="choice-button btn btn-lg"
+            onClick={this.sendMessage}
+          >
+            SEND
+          </button>
+        </div>
       </div>
     );
   }

@@ -22,7 +22,7 @@ export default class DialogComponent extends Component {
       return (
         <div className="dialog-container row fixed-bottom secret-bit-question">
           <div className="col-12">
-            <h2 className="question">Would you like to pay for the dinner?</h2>
+            <h2 className="dialog-question">Would you like to send an anonymous message?</h2>
           </div>
           <div className="col-2 offset-4 choice-button-container">
             <button
@@ -38,7 +38,7 @@ export default class DialogComponent extends Component {
             <button
               type="button"
               id="no-payer"
-              className="choice-button btn btn-danger btn-lg"
+              className="dialog-choice-button btn btn-danger btn-lg"
               onClick={this.negativeClick.bind(this)}
             >
               NO

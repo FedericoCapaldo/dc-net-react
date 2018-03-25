@@ -18,6 +18,7 @@ import { debugBackEnd,
          startCommunicationRound,
          startVotingRound,
          startLengthMesuramentRound,
+         substituteKeys,
          updateSecondsToStart,
          waitingConnections } from '../../socket-api';
 import ConnectionComponent from '../ConnectionComponent/ConnectionComponent';
@@ -269,6 +270,15 @@ export default class AppComponent extends Component {
     receiveGeneralMessage((message) => {
       this.setState({
         events: [...this.state.events, new Message(message)],
+      });
+    });
+
+    substituteKeys((newKeys) => {
+      const tempEvents = this.state.events;
+      const currentRound = tempEvents[this.state.currentRoundIndex];
+      currentRound.keys = newKeys;
+      this.setState({
+        events: tempEvents,
       });
     });
 

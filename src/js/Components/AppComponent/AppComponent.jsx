@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { abortRoundInProgress,
+import { debugBackEnd,
+         abortRoundInProgress,
          connectionEvent,
          connectionSetup,
          hideChoiceDialog,
@@ -96,6 +97,7 @@ export default class AppComponent extends Component {
       keyValue = tempKeys[1].keys.shift();
       newRound.keys = [...newRound.keys, { keyName, keyValue }];
       if (isNaN(keyValue)) {
+        // to be removed
         this.setState({
           events: [...this.state.events, new Message('we are done!')],
         });
@@ -128,18 +130,29 @@ export default class AppComponent extends Component {
               events: tempEvents,
               showMessageDialog: true,
             });
-          } else {
-            let countDownTimer = 4;
-            const myInterval = setInterval(() => {
-              --countDownTimer;
+          }
+
+          let countDownTimer = 10;
+          const myInterval = setInterval(() => {
+            --countDownTimer;
+            if (this.state.events[this.state.currentRoundIndex].aborted) {
+              this.setState({
+                secondsToStart: 0,
+              });
+              clearInterval(myInterval);
+            } else {
               this.setState({ secondsToStart: countDownTimer });
               if (countDownTimer <= 0) {
-                this.calculateLengthRoundResultAndSendToServer();
+                if (this.state.amISender) {
+                  this.sendMessageLengthinResponse();
+                } else {
+                  this.calculateLengthRoundResultAndSendToServer();
+                }
                 clearInterval(myInterval);
               }
-            }, 1000);
-            this.setState({ events: tempEvents });
-          }
+            }
+          }, 1000);
+          this.setState({ events: tempEvents });
         } else { // normal communication round
           this.calculateLengthRoundResultAndSendToServer();
           this.setState({
@@ -231,6 +244,13 @@ export default class AppComponent extends Component {
       currentRound.abortReason = abortReason;
       this.setState({
         events: tempEvents,
+        showDiagol: false,
+        showMessageDialog: false,
+        amISender: false,
+        message: '',
+        messageLength: 0,
+        messageKeys: [],
+        roundNumber: 1,
       });
     });
 
@@ -256,7 +276,7 @@ export default class AppComponent extends Component {
     this.hideMessageInputDialog = this.hideMessageInputDialog.bind(this);
     this.updateParticipantResponseAndSendToServer =
       this.updateParticipantResponseAndSendToServer.bind(this);
-    this.sendMessageLengthinResponse = this.sendMessageLengthinResponse.bind(this);
+    this.saveMessageInput = this.saveMessageInput.bind(this);
   }
 
   componentDidUpdate() {
@@ -288,7 +308,7 @@ export default class AppComponent extends Component {
     });
   }
 
-  sendMessageLengthinResponse(message, messageLength) {
+  sendMessageLengthinResponse() {
     const tempEvents = this.state.events;
     const currentRound = tempEvents[this.state.currentRoundIndex];
     // currentRound.participantResponse = response;
@@ -297,17 +317,23 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
     currentRound.valueToServer =
-      this.calculateOppositeValueToBroadcast(key1, key2, messageLength);
+      this.calculateOppositeValueToBroadcast(key1, key2, this.state.messageLength);
 
     sendParticipantLengthRoundResponse(currentRound.valueToServer);
 
     this.setState({
-      message,
-      messageCopy: message,
-      messageLength,
       events: tempEvents,
     });
   }
+
+  saveMessageInput(message, messageLength) {
+    this.setState({
+      message,
+      messageCopy: message,
+      messageLength,
+    });
+  }
+
 
   calculateLengthRoundResultAndSendToServer() {
     const tempEvents = this.state.events;
@@ -410,6 +436,7 @@ export default class AppComponent extends Component {
           leftToWait={this.state.leftToWait}
         />
         <div className="app-body">
+        <button onClick={debugBackEnd}>debug</button>
           {this.state.events &&
             this.state.events.map((ob) => {
               if (ob.constructor.name === 'Round') {
@@ -423,7 +450,7 @@ export default class AppComponent extends Component {
           }
           {this.state.showMessageDialog &&
             <UserMessageInputComponent
-              sendMessageLengthinResponse={this.sendMessageLengthinResponse}
+              saveMessageInput={this.saveMessageInput}
               hideMessageInputDialog={this.hideMessageInputDialog}
             />
           }

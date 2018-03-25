@@ -58,8 +58,10 @@ export default class UserMessageInputComponent extends Component {
 
   sendMessage() {
     if (this.state.messageLength) {
-      this.props.sendMessageLengthinResponse(this.state.message, this.state.messageLength);
+      this.props.saveMessageInput(this.state.message, this.state.messageLength);
       this.props.hideMessageInputDialog();
+    } else {
+      this.setState({ reasonInvalid: 'Message appears to be empty' });
     }
   }
 
@@ -114,6 +116,6 @@ export default class UserMessageInputComponent extends Component {
 
 
 UserMessageInputComponent.propTypes = {
-  sendMessageLengthinResponse: PropTypes.function,
+  saveMessageInput: PropTypes.function,
   hideMessageInputDialog: PropTypes.function,
 };

@@ -1,6 +1,10 @@
 import io from 'socket.io-client';
 const socket = io('localhost:9000');
 
+function debugBackEnd() {
+  socket.emit('time-to-debug');
+}
+
 // events emitted by the components
 function sendParticipantVotingResponse(result) {
   socket.emit('participant-voting-response', result);
@@ -125,7 +129,8 @@ function receiveGeneralMessage(callback) {
   });
 }
 
-export { abortRoundInProgress,
+export { debugBackEnd,
+         abortRoundInProgress,
          connectionEvent,
          connectionSetup,
          hideChoiceDialog,

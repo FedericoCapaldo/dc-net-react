@@ -135,6 +135,12 @@ function substituteKeys(callback) {
   });
 }
 
+function substituteMessageKeys(callback) {
+  socket.on('substitute-message-keys', (newMessageKeys) => {
+    callback(newMessageKeys);
+  });
+}
+
 export { debugBackEnd,
          abortRoundInProgress,
          connectionEvent,
@@ -155,5 +161,6 @@ export { debugBackEnd,
          startVotingRound,
          startLengthMesuramentRound,
          substituteKeys,
+         substituteMessageKeys,
          updateSecondsToStart,
          waitingConnections };

@@ -19,6 +19,7 @@ import { debugBackEnd,
          startVotingRound,
          startLengthMesuramentRound,
          substituteKeys,
+         substituteMessageKeys,
          updateSecondsToStart,
          waitingConnections } from '../../socket-api';
 import ConnectionComponent from '../ConnectionComponent/ConnectionComponent';
@@ -46,6 +47,7 @@ export default class AppComponent extends Component {
       whoami: '',
       amISender: false,
       message: '',
+      messagePointer: 0,
       messageLength: 0,
       messageKeys: [],
     };
@@ -92,10 +94,10 @@ export default class AppComponent extends Component {
       const newRound = new Round(this.state.roundNumber, totalRoundNumbers);
       const tempKeys = this.state.messageKeys;
       let keyName = tempKeys[0].keyName;
-      let keyValue = tempKeys[0].keys.shift();
+      let keyValue = tempKeys[0].keyValues[this.state.messagePointer];
       newRound.keys = [{ keyName, keyValue }];
       keyName = tempKeys[1].keyName;
-      keyValue = tempKeys[1].keys.shift();
+      keyValue = tempKeys[1].keyValues[this.state.messagePointer];
       newRound.keys = [...newRound.keys, { keyName, keyValue }];
       if (isNaN(keyValue)) {
         // to be removed
@@ -108,6 +110,7 @@ export default class AppComponent extends Component {
           roundNumber: ++this.state.roundNumber,
           events: [...this.state.events, newRound],
           messageKeys: tempKeys,
+          messagePointer: ++this.state.messagePointer,
         });
         this.calculateAndSendResult();
       }
@@ -168,9 +171,9 @@ export default class AppComponent extends Component {
       // consider taking actions if there are more than 2 keys.
     });
 
-    receiveMessageKeys((keyName, keys) => {
+    receiveMessageKeys((keyName, keyValues) => {
       this.setState({
-        messageKeys: [...this.state.messageKeys, { keyName, keys }],
+        messageKeys: [...this.state.messageKeys, { keyName, keyValues }],
       });
     });
 
@@ -249,6 +252,7 @@ export default class AppComponent extends Component {
         showMessageDialog: false,
         amISender: false,
         message: '',
+        messagePointer: 0,
         messageLength: 0,
         messageKeys: [],
         roundNumber: 1,
@@ -279,6 +283,12 @@ export default class AppComponent extends Component {
       currentRound.keys = newKeys;
       this.setState({
         events: tempEvents,
+      });
+    });
+
+    substituteMessageKeys((newMessageKeys) => {
+      this.setState({
+        messageKeys: newMessageKeys,
       });
     });
 
@@ -404,6 +414,7 @@ export default class AppComponent extends Component {
       showDiagol: false,
       amISender: false,
       message: '',
+      messagePointer: 0,
       messageLength: 0,
       messageKeys: [],
     });
@@ -413,6 +424,7 @@ export default class AppComponent extends Component {
     this.setState({
       amISender: false,
       message: '',
+      messagePointer: 0,
       messageLength: 0,
       messageKeys: [],
     });

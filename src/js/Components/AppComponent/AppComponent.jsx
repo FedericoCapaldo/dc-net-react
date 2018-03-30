@@ -218,7 +218,7 @@ export default class AppComponent extends Component {
 
     showCommunicatedMessage(() => {
       const mes =
-        (this.state.amISender ? 'Anonymous Message sent: ' : 'Anonymous Message Received: ')
+        (this.state.amISender ? 'Message Anonymously sent: ' : 'Message Anonymously Received: ')
         + this.state.message;
 
       this.setState({
@@ -327,7 +327,7 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
     currentRound.valueToServer =
-      this.calculateOppositeValueToBroadcast(key1, key2, this.state.messageLength);
+      this.calculateXORValueToBroadcast(key1, key2, this.state.messageLength);
 
     sendParticipantLengthRoundResponse(currentRound.valueToServer);
 
@@ -354,7 +354,7 @@ export default class AppComponent extends Component {
     const key2 = currentRound.keys[1].keyValue;
 
     currentRound.valueToServer =
-      this.calculateOppositeValueToBroadcast(key1, key2, 0);
+      this.calculateXORValueToBroadcast(key1, key2, 0);
 
     sendParticipantLengthRoundResponse(currentRound.valueToServer);
 
@@ -389,12 +389,11 @@ export default class AppComponent extends Component {
   }
 
   calculateXORValueToBroadcast(key1, key2, participantChoice) {
-    const sum = key1 + key2 + participantChoice;
-    return sum % 2;
+    return key1 ^ key2 ^ participantChoice;
   }
 
   calculateOppositeValueToBroadcast(key1, key2, participantChoice) {
-    return key1 + key2 + participantChoice;
+    return key1 ^ key2 ^ participantChoice;
   }
 
   resetReconnection() {

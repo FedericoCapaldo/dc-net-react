@@ -50,7 +50,13 @@ export default class RoundComponent extends Component {
           </p>
         }
         {round.isWaitingRoundResult &&
-          <p>Waiting for other clients result...</p>
+          <p>Waiting for other clients result
+            <span className="loading">
+              <span>.</span>
+              <span>.</span>
+              <span>.</span>
+            </span>
+          </p>
         }
         {round.roundResult !== -1 &&
           <p>Round result is {round.roundResult}</p>

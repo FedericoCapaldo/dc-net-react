@@ -8,9 +8,47 @@
   padding-left: 10px;
   padding-top: 10px;
   color: #f6f1ed;
-  min-width: 575px;
+  min-width: 700px;
 }
 
 .header-title {
+  display: inline-block;
+}
 
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-title {
+  margin-right: 10px;
+  padding-left: 10px;
+}
+.dropdown-element-title {
+  width: 200px;
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.dropdown-content {
+    display: none;
+    right: 10px;
+    position: absolute;
+    background-color: #f2e9e9;
+    color: #31231e;
+    min-width: 260px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-scrolling {
+  cursor: pointer;
 }

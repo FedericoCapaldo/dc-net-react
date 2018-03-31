@@ -1,12 +1,12 @@
 .user_input-container {
   background-color: #6a5750;
-  min-width: 575px;
+  min-width: 700px;
   height: 125px;
 }
 
 .user_input-question-container {
     height: 10px;
-    min-width: 575px;
+    min-width: 700px;
 }
 
 .user_input-question {

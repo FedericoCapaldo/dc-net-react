@@ -50,6 +50,7 @@ export default class AppComponent extends Component {
       messagePointer: 0,
       messageLength: 0,
       messageKeys: [],
+      isScrollingEnabled: true,
     };
 
     connectionSetup((name) => {
@@ -297,6 +298,7 @@ export default class AppComponent extends Component {
     this.updateParticipantResponseAndSendToServer =
       this.updateParticipantResponseAndSendToServer.bind(this);
     this.saveMessageInput = this.saveMessageInput.bind(this);
+    this.toggleScrollInApp = this.toggleScrollInApp.bind(this);
   }
 
   componentDidUpdate() {
@@ -304,7 +306,9 @@ export default class AppComponent extends Component {
   }
 
   scrollToBottom() {
-    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+    if (this.state.isScrollingEnabled) {
+      this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   updateParticipantResponseAndSendToServer(response) {
@@ -448,6 +452,12 @@ export default class AppComponent extends Component {
     });
   }
 
+  toggleScrollInApp() {
+    this.setState({
+      isScrollingEnabled: !this.state.isScrollingEnabled,
+    });
+  }
+
   render() {
     return (
       <div>
@@ -455,6 +465,7 @@ export default class AppComponent extends Component {
           whoami={this.state.whoami}
           secondsToStart={this.state.secondsToStart}
           leftToWait={this.state.leftToWait}
+          toggleScrollInApp={this.toggleScrollInApp}
         />
         <div className="app-body">
         <button onClick={debugBackEnd}>debug</button>

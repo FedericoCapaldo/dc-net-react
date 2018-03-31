@@ -3,7 +3,7 @@
   min-width: 575px;
 }
 
-.question {
+.dialog-question {
   text-align: center;
   color: #f6f1ed;
 }
@@ -15,6 +15,6 @@
   min-width: 120px;
 }
 
-.choice-button {
+.dialog-choice-button {
   vertical-align: middle;
 }

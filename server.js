@@ -28,9 +28,6 @@ if (__DEVELOPMENT__) {
   var compiler = webpack(config);
 }
 
-
-
-
 const server = new http.Server(app);
 
 ioServer.listen(server);

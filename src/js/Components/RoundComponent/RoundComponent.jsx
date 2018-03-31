@@ -12,10 +12,25 @@ export default class RoundComponent extends Component {
     if (isVotingRound) {
       return 'Voting Round';
     } else if (isLengthRound) {
-      return 'Length Calculation Round';
+      return 'Message Length Calculation Round';
     } else {
       // normal communication round
       return `Round ${number}/${totalRoundNumbers}`;
+    }
+  }
+
+  displayRoundResult(round) {
+    const { isVotingRound, isLengthRound, roundResult } = round;
+    if (isVotingRound) {
+      const x = roundResult ?
+        'Someone wants to send a message.' :
+        'No one wants to send a message';
+      return `Voting Round result is ${roundResult}.\n` + x;
+    } else if (isLengthRound) {
+      return `Length of message is ${roundResult}`;
+    } else {
+      // normal communication round
+      return `Current round result is ${roundResult}`;
     }
   }
 
@@ -32,7 +47,13 @@ export default class RoundComponent extends Component {
         <div>
         <p className="round-title">{this.displayRoundTitle(round)}</p>
         {round.isWaitingKeys &&
-          <p>Waiting to receive secret keys</p>
+          <p>Waiting to receive secret keys
+            <span className="loading">
+              <span>.</span>
+              <span>.</span>
+              <span>.</span>
+            </span>
+          </p>
         }
 
         {round.keys.length === 2 &&
@@ -41,7 +62,7 @@ export default class RoundComponent extends Component {
           })
         }
         {round.valueToServer !== -1 &&
-          <p>Your result to the server is {round.valueToServer}</p>
+          <p>Your message to the server is {round.valueToServer}</p>
         }
         {round.messageRejected &&
           <p>
@@ -50,7 +71,7 @@ export default class RoundComponent extends Component {
           </p>
         }
         {round.isWaitingRoundResult &&
-          <p>Waiting for other clients result
+          <p>Waiting for other client results
             <span className="loading">
               <span>.</span>
               <span>.</span>
@@ -59,7 +80,7 @@ export default class RoundComponent extends Component {
           </p>
         }
         {round.roundResult !== -1 &&
-          <p>Round result is {round.roundResult}</p>
+          <p className="round-result-message">{this.displayRoundResult(round)}</p>
         }
       </div>
       );

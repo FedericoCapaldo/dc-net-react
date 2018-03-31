@@ -480,6 +480,14 @@ export default class AppComponent extends Component {
               }
             })
           }
+          {this.state.secondsToStart > 0 &&
+            <div className="counter-container">
+              <p className="counter-text">
+                {this.state.secondsToStart} seconds before communications starts
+              </p>
+            </div>
+          }
+
           {this.state.showMessageDialog &&
             <UserMessageInputComponent
               saveMessageInput={this.saveMessageInput}

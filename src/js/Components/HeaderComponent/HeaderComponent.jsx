@@ -26,9 +26,6 @@ export default class HeaderComponent extends Component {
         <h3 className="header-title">
           DC-net simulation App - {this.props.whoami && <span>You are: {this.props.whoami}</span>}
         </h3>
-        {this.props.secondsToStart > 0 &&
-          <p>{this.props.secondsToStart} seconds before communications starts</p>
-        }
         <div className="dropdown float-right">
           <h3 className="dropdown-title">Controls</h3>
           <div className="dropdown-content">
@@ -47,7 +44,6 @@ export default class HeaderComponent extends Component {
             <input className="form-check-input" type="checkbox" value="" id="defaultCheck2" />
           </div>
         </div>
-
         {this.props.leftToWait > 0 &&
           <p>{this.props.leftToWait} extra clients needed to start communication</p>
         }

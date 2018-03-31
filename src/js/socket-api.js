@@ -117,9 +117,9 @@ function abortRoundInProgress(callback) {
   });
 }
 
-function updateSecondsToStart(callback) {
-  socket.on('timer', (secondsToStart) => {
-    callback(secondsToStart);
+function updateTimer(callback) {
+  socket.on('timer', (time) => {
+    callback(time.timerSeconds, time.timerMessage);
   });
 }
 
@@ -162,5 +162,5 @@ export { debugBackEnd,
          startLengthMesuramentRound,
          substituteKeys,
          substituteMessageKeys,
-         updateSecondsToStart,
+         updateTimer,
          waitingConnections };

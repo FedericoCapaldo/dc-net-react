@@ -1,0 +1,13 @@
+.counter-container {
+  border: 2px #f8773f solid;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 4px;
+}
+
+.counter-text {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 2px;
+  font-weight: bold;
+}

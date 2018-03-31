@@ -20,7 +20,7 @@ import { debugBackEnd,
          startLengthMesuramentRound,
          substituteKeys,
          substituteMessageKeys,
-         updateSecondsToStart,
+         updateTimer,
          waitingConnections } from '../../socket-api';
 import ConnectionComponent from '../ConnectionComponent/ConnectionComponent';
 import DialogComponent from '../DialogComponent/DialogComponent';
@@ -29,6 +29,7 @@ import HeaderComponent from '../HeaderComponent/HeaderComponent';
 import UserMessageInputComponent from
   '../UserMessageInputComponent/UserMessageInputComponent';
 import MessageComponent from '../MessageComponent/MessageComponent';
+import TimerComponent from '../TimerComponent/TimerComponent';
 
 import { Round, Connection, Message } from '../../Objects';
 import './style.css';
@@ -41,7 +42,8 @@ export default class AppComponent extends Component {
       events: [],
       leftToWait: 0,
       roundNumber: 1,
-      secondsToStart: 0,
+      timerSeconds: 0,
+      timerMessage: '',
       showDiagol: false,
       showMessageDialog: false,
       whoami: '',
@@ -142,11 +144,15 @@ export default class AppComponent extends Component {
             --countDownTimer;
             if (this.state.events[this.state.currentRoundIndex].aborted) {
               this.setState({
-                secondsToStart: 0,
+                timerSeconds: 0,
+                timerMessage: '',
               });
               clearInterval(myInterval);
             } else {
-              this.setState({ secondsToStart: countDownTimer });
+              this.setState({
+                timerSeconds: countDownTimer,
+                timerMessage: 'before computing message length.',
+              });
               if (countDownTimer <= 0) {
                 if (this.state.amISender) {
                   this.sendMessageLengthinResponse();
@@ -268,8 +274,8 @@ export default class AppComponent extends Component {
     //   this.hideMessageInputDialog();
     // });
 
-    updateSecondsToStart((secondsToStart) => {
-      this.setState({ secondsToStart });
+    updateTimer((timerSeconds, timerMessage) => {
+      this.setState({ timerSeconds, timerMessage });
     });
 
     receiveGeneralMessage((message) => {
@@ -463,7 +469,7 @@ export default class AppComponent extends Component {
       <div>
         <HeaderComponent
           whoami={this.state.whoami}
-          secondsToStart={this.state.secondsToStart}
+          timerSeconds={this.state.timerSeconds}
           leftToWait={this.state.leftToWait}
           toggleScrollInApp={this.toggleScrollInApp}
         />
@@ -480,12 +486,11 @@ export default class AppComponent extends Component {
               }
             })
           }
-          {this.state.secondsToStart > 0 &&
-            <div className="counter-container">
-              <p className="counter-text">
-                {this.state.secondsToStart} seconds before communications starts
-              </p>
-            </div>
+          {this.state.timerSeconds > 0 &&
+            <TimerComponent
+              timerSeconds={this.state.timerSeconds}
+              timerMessage={this.state.timerMessage}
+            />
           }
 
           {this.state.showMessageDialog &&

@@ -49,6 +49,7 @@
     display: block;
 }
 
-.dropdown-scrolling {
+.dropdown-scrolling,
+.dropdown-helpers {
   cursor: pointer;
 }

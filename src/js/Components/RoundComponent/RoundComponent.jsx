@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import HelperComponent from '../HelperComponent/HelperComponent';
 import './style.css';
 
 export default class RoundComponent extends Component {
   constructor(props) {
     super(props);
+  }
+
+  getRoundType(round) {
+    const { isVotingRound, isLengthRound } = round;
+    if (isVotingRound) {
+      return 'voting';
+    } else if (isLengthRound) {
+      return 'length';
+    } else {
+      return 'communication';
+    }
   }
 
   displayRoundTitle(round) {
@@ -22,10 +34,7 @@ export default class RoundComponent extends Component {
   displayRoundResult(round) {
     const { isVotingRound, isLengthRound, roundResult } = round;
     if (isVotingRound) {
-      const x = roundResult ?
-        'Someone wants to send a message.' :
-        'No one wants to send a message';
-      return `Voting Round result is ${roundResult}.\n` + x;
+      return `Voting Round result is ${roundResult}.`;
     } else if (isLengthRound) {
       return `Length of message is ${roundResult}`;
     } else {
@@ -34,53 +43,112 @@ export default class RoundComponent extends Component {
     }
   }
 
-  roundContent(round) {
+  roundContent(round, displayHelpers) {
     if (round.aborted) {
       return (
-        <div>
-          <h3>Round {round.number} Aborted!</h3>
+        <div className="round-line">
+          <p className="round-title">Round Aborted!</p>
+          {displayHelpers &&
+            <HelperComponent
+              helperPosition="aborted"
+              roundType={this.getRoundType(round)}
+            />
+          }
           <p>{round.abortReason}</p>
         </div>
       );
     } else {
       return (
         <div>
-        <p className="round-title">{this.displayRoundTitle(round)}</p>
+        <div className="round-line">
+          <p className="round-title">{this.displayRoundTitle(round)}</p>
+          {displayHelpers &&
+            <HelperComponent
+              helperPosition="title"
+              roundType={this.getRoundType(round)}
+            />
+          }
+        </div>
+
         {round.isWaitingKeys &&
-          <p>Waiting to receive secret keys
+          <div className="round-line">
+            <span>Waiting to receive secret keys</span>
             <span className="loading">
               <span>.</span>
               <span>.</span>
               <span>.</span>
             </span>
-          </p>
+          </div>
         }
 
         {round.keys.length === 2 &&
           round.keys.map((k) => {
-            return <p>{k.keyName} -> {k.keyValue}</p>;
+            return (
+              <div className="round-line">
+                <span>{k.keyName} -> {k.keyValue}</span>
+                {displayHelpers &&
+                  <HelperComponent
+                    helperPosition="key"
+                    roundType={this.getRoundType(round)}
+                    keyName={k.keyName}
+                    keyValue={k.keyValue}
+                  />
+                }
+              </div>
+            );
           })
         }
         {round.valueToServer !== -1 &&
-          <p>Your message to the server is {round.valueToServer}</p>
+          <div className="round-line">
+            <span>Your message to the server is {round.valueToServer}</span>
+            {displayHelpers &&
+              <HelperComponent
+                helperPosition="sent-to-server"
+                roundType={this.getRoundType(round)}
+                result={round.valueToServer}
+              />
+            }
+          </div>
         }
         {round.messageRejected &&
-          <p>
-            WANRING: Another client already sent a message in this round.
-            Your message will not be flipped.
-          </p>
+          <div className="round-line">
+            <span className="warning">Warning: </span>
+            <span>You lost the voting round. Try again later.</span>
+            {displayHelpers &&
+              <HelperComponent
+                helperPosition="rejection"
+                roundType={this.getRoundType(round)}
+              />
+            }
+          </div>
         }
         {round.isWaitingRoundResult &&
-          <p>Waiting for other client results
+          <div className="round-line">
+            <span>Waiting for other client results</span>
             <span className="loading">
               <span>.</span>
               <span>.</span>
               <span>.</span>
             </span>
-          </p>
+            {displayHelpers &&
+              <HelperComponent
+                helperPosition="waiting-result"
+                roundType={this.getRoundType(round)}
+              />
+            }
+          </div>
         }
         {round.roundResult !== -1 &&
-          <p className="round-result-message">{this.displayRoundResult(round)}</p>
+          <div className="round-result-message round-line">
+            <span>{this.displayRoundResult(round)}</span>
+            {displayHelpers &&
+              <HelperComponent
+                helperPosition="round-result"
+                roundType={this.getRoundType(round)}
+                result={round.roundResult}
+              />
+            }
+          </div>
         }
       </div>
       );
@@ -91,7 +159,7 @@ export default class RoundComponent extends Component {
   render() {
     return (
       <div className="round-container">
-        {this.roundContent(this.props.round)}
+        {this.roundContent(this.props.round, this.props.displayHelpers)}
       </div>
     );
   }
@@ -100,4 +168,5 @@ export default class RoundComponent extends Component {
 RoundComponent.propTypes = {
   number: PropTypes.number,
   round: PropTypes.object,
+  displayHelpers: PropTypes.boolean,
 };

@@ -8,9 +8,11 @@ export default class HeaderComponent extends Component {
 
     this.state = {
       isScrollingEnabled: true,
+      areMessageHelpersEnabled: false,
     };
 
     this.toggleScrolling = this.toggleScrolling.bind(this);
+    this.toggleMessageHelpers = this.toggleMessageHelpers.bind(this);
   }
 
   toggleScrolling() {
@@ -18,6 +20,13 @@ export default class HeaderComponent extends Component {
       isScrollingEnabled: !this.state.isScrollingEnabled,
     });
     this.props.toggleScrollInApp();
+  }
+
+  toggleMessageHelpers() {
+    this.setState({
+      areMessageHelpersEnabled: !this.state.areMessageHelpersEnabled,
+    });
+    this.props.toggleMessageHelpersInApp();
   }
 
   render() {
@@ -40,8 +49,16 @@ export default class HeaderComponent extends Component {
               />
             </div>
             <hr />
-            <p className="dropdown-element-title">Slow Simulation</p>
-            <input className="form-check-input" type="checkbox" value="" id="defaultCheck2" />
+            <div className="dropdown-helpers" onClick={this.toggleMessageHelpers}>
+              <p className="dropdown-element-title">
+                Helpers { this.state.areMessageHelpersEnabled ? '(Enabled)' : '(Disabled)' }
+              </p>
+              <input className="form-check-input"
+                type="checkbox"
+                checked={this.state.areMessageHelpersEnabled}
+                id="defaultCheck2"
+              />
+            </div>
           </div>
         </div>
         {this.props.leftToWait > 0 &&
@@ -57,4 +74,5 @@ HeaderComponent.propTypes = {
   secondsToStart: PropTypes.number,
   leftToWait: PropTypes.number,
   toggleScrollInApp: PropTypes.function,
+  toggleMessageHelpersInApp: PropTypes.function,
 };

@@ -1,5 +1,7 @@
 .round-title {
   font-weight: bold;
+  display: inline;
+  font-size: 1.2em;
 }
 
 .round-container {
@@ -9,6 +11,15 @@
   border-radius: 4px;
 }
 
+.round-line {
+  margin-bottom: 1rem;
+}
+
 .round-result-message {
   margin-top: 23px;
+  font-size: 1.1em;
+}
+
+.helper {
+  margin: 5px;
 }

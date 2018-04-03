@@ -53,6 +53,7 @@ export default class AppComponent extends Component {
       messageLength: 0,
       messageKeys: [],
       isScrollingEnabled: true,
+      areMessageHelpersEnabled: false,
     };
 
     connectionSetup((name) => {
@@ -305,6 +306,7 @@ export default class AppComponent extends Component {
       this.updateParticipantResponseAndSendToServer.bind(this);
     this.saveMessageInput = this.saveMessageInput.bind(this);
     this.toggleScrollInApp = this.toggleScrollInApp.bind(this);
+    this.toggleMessageHelpersInApp = this.toggleMessageHelpersInApp.bind(this);
   }
 
   componentDidUpdate() {
@@ -464,6 +466,12 @@ export default class AppComponent extends Component {
     });
   }
 
+  toggleMessageHelpersInApp() {
+    this.setState({
+      areMessageHelpersEnabled: !this.state.areMessageHelpersEnabled,
+    });
+  }
+
   render() {
     return (
       <div>
@@ -472,13 +480,19 @@ export default class AppComponent extends Component {
           timerSeconds={this.state.timerSeconds}
           leftToWait={this.state.leftToWait}
           toggleScrollInApp={this.toggleScrollInApp}
+          toggleMessageHelpersInApp={this.toggleMessageHelpersInApp}
         />
         <div className="app-body">
         <button onClick={debugBackEnd}>debug</button>
           {this.state.events &&
             this.state.events.map((ob) => {
               if (ob.constructor.name === 'Round') {
-                return <RoundComponent round={ob} />;
+                return (
+                  <RoundComponent
+                    round={ob}
+                    displayHelpers={this.state.areMessageHelpersEnabled}
+                  />
+                );
               } else if (ob.constructor.name === 'Connection') {
                 return <ConnectionComponent data={ob} />;
               } else if (ob.constructor.name === 'Message') {

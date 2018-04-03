@@ -36,3 +36,8 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 .loading span:nth-child(3) {
     animation-delay: .4s;
 }
+
+.warning {
+  color: red;
+  font-weight: bold;
+}

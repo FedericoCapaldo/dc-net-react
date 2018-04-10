@@ -24,6 +24,9 @@ export default class RoundComponent extends Component {
     if (isVotingRound) {
       return 'Voting Round';
     } else if (isLengthRound) {
+      if (round.lengthRoundAttempt) {
+        return `Message Length Calculation Round (attempt ${round.lengthRoundAttempt})`;
+      }
       return 'Message Length Calculation Round';
     } else {
       // normal communication round
@@ -124,7 +127,7 @@ export default class RoundComponent extends Component {
         }
         {round.isWaitingRoundResult &&
           <div className="round-line">
-            <span>Waiting for other client results</span>
+            <span>Waiting for other clients results</span>
             <span className="loading">
               <span>.</span>
               <span>.</span>

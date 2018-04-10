@@ -47,9 +47,9 @@ function startVotingRound(callback) {
   });
 }
 
-function startLengthMesuramentRound(callback) {
-  socket.on('start-length-round', () => {
-    callback();
+function startLengthCalculationRound(callback) {
+  socket.on('start-length-round', (attemptNumber) => {
+    callback(attemptNumber);
   });
 }
 
@@ -141,6 +141,12 @@ function substituteMessageKeys(callback) {
   });
 }
 
+function resetMessageSender(callback) {
+  socket.on('reset-message-sender', () => {
+    callback();
+  });
+}
+
 export { debugBackEnd,
          abortRoundInProgress,
          connectionEvent,
@@ -150,6 +156,7 @@ export { debugBackEnd,
          receiveGeneralMessage,
          receiveMessageKeys,
          receiveRoundKey,
+         resetMessageSender,
          receiveLengthRoundResult,
          receiveVotingRoundResult,
          receiveCommunicationRoundResult,
@@ -159,7 +166,7 @@ export { debugBackEnd,
          showCommunicatedMessage,
          startCommunicationRound,
          startVotingRound,
-         startLengthMesuramentRound,
+         startLengthCalculationRound,
          substituteKeys,
          substituteMessageKeys,
          updateTimer,

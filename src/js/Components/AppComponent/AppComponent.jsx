@@ -11,13 +11,14 @@ import { debugBackEnd,
          receiveLengthRoundResult,
          receiveVotingRoundResult,
          receiveCommunicationRoundResult,
+         resetMessageSender,
          sendParticipantVotingResponse,
          sendParticipantLengthRoundResponse,
          sendParticipantCommunicationRoundResponse,
          showCommunicatedMessage,
          startCommunicationRound,
          startVotingRound,
-         startLengthMesuramentRound,
+         startLengthCalculationRound,
          substituteKeys,
          substituteMessageKeys,
          updateTimer,
@@ -83,9 +84,10 @@ export default class AppComponent extends Component {
       });
     });
 
-    startLengthMesuramentRound(() => {
+    startLengthCalculationRound((attemptNumber) => {
       const newRound = new Round();
       newRound.isLengthRound = true;
+      newRound.lengthRoundAttempt = attemptNumber;
       newRound.isWaitingKeys = true;
       this.setState({
         currentRoundIndex: this.state.events.length,
@@ -297,6 +299,13 @@ export default class AppComponent extends Component {
     substituteMessageKeys((newMessageKeys) => {
       this.setState({
         messageKeys: newMessageKeys,
+      });
+    });
+
+    resetMessageSender(() => {
+      this.setState({
+        amISender: false,
+        showMessageDialog: false,
       });
     });
 

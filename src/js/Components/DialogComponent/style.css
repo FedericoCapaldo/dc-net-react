@@ -13,6 +13,7 @@
   text-align:center;
   line-height:75px;
   min-width: 120px;
+  display: inline-block;
 }
 
 .dialog-choice-button {

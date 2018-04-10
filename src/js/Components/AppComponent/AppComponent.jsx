@@ -247,6 +247,7 @@ export default class AppComponent extends Component {
       tempEvents[this.state.currentRoundIndex].messageRejected = true;
       this.setState({
         amISender: false,
+        sentMessageLastRound: false,
         events: tempEvents,
       });
     });
@@ -261,6 +262,7 @@ export default class AppComponent extends Component {
         showDiagol: false,
         showMessageDialog: false,
         amISender: false,
+        sentMessageLastRound: false,
         message: '',
         messagePointer: 0,
         messageLength: 0,
@@ -330,8 +332,18 @@ export default class AppComponent extends Component {
 
   updateParticipantResponseAndSendToServer(response) {
     if (response) {
-      this.setState({ amISender: true });
+      this.setState({
+        amISender: true,
+        sentMessageLastRound: true,
+      });
+    } else {
+      if (this.state.sentMessageLastRound) {
+        this.setState({
+          sentMessageLastRound: false,
+        });
+      }
     }
+
     const tempEvents = this.state.events;
     const currentRound = tempEvents[this.state.currentRoundIndex];
     // currentRound.participantResponse = response;
@@ -434,6 +446,7 @@ export default class AppComponent extends Component {
       showMessageDialog: false,
       showDiagol: false,
       amISender: false,
+      sentMessageLastRound: false,
       message: '',
       messagePointer: 0,
       messageLength: 0,
@@ -527,6 +540,7 @@ export default class AppComponent extends Component {
               hideDialog={this.hideDialog}
               updateParticipantResponseAndSendToServer=
                 {this.updateParticipantResponseAndSendToServer}
+              isUnableToSend={this.state.sentMessageLastRound}
             />
           }
           <div id="dummy-component-for-scroll"

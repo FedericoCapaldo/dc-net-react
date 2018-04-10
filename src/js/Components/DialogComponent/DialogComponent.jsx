@@ -18,32 +18,61 @@ export default class DialogComponent extends Component {
       this.props.hideDialog(event);
     }
 
-    render() {
-      return (
-        <div className="dialog-container row fixed-bottom secret-bit-question">
-          <div className="col-12">
-            <h2 className="dialog-question">Want to send an anonymous message?</h2>
-          </div>
-          <div className="col-2 offset-4 choice-button-container">
-            <button
-              type="button"
-              id="yes-payer"
-              className="choice-button btn btn-success btn-lg"
-              onClick={this.positiveClick.bind(this)}
-            >
-              YES
-            </button>
-          </div>
-          <div className="col-2 choice-button-container">
+    displayButtons(isUnableToSend) {
+      if (isUnableToSend) {
+        return (
+          <div className="col-12 choice-button-container">
             <button
               type="button"
               id="no-payer"
-              className="dialog-choice-button btn btn-danger btn-lg"
+              className="dialog-choice-button btn btn-success btn-lg"
               onClick={this.negativeClick.bind(this)}
             >
-              NO
+              OK
             </button>
           </div>
+        );
+      } else {
+        return (
+          <div className="col-12">
+            <div className="col-2 offset-4 choice-button-container">
+              <button
+                type="button"
+                id="yes-payer"
+                className="choice-button btn btn-success btn-lg"
+                onClick={this.positiveClick.bind(this)}
+              >
+                YES
+              </button>
+            </div>
+            <div className="col-2 choice-button-container">
+              <button
+                type="button"
+                id="no-payer"
+                className="dialog-choice-button btn btn-danger btn-lg"
+                onClick={this.negativeClick.bind(this)}
+              >
+                NO
+              </button>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    render() {
+      const { isUnableToSend } = this.props;
+      return (
+        <div className="dialog-container row fixed-bottom secret-bit-question">
+          <div className="col-12">
+            <h2 className="dialog-question">
+              {isUnableToSend ?
+                'Cannot send a message twice in a row.' :
+                'Want to send an anonymous message?'
+              }
+            </h2>
+          </div>
+          {this.displayButtons(isUnableToSend)}
         </div>
       );
     }
@@ -52,4 +81,5 @@ export default class DialogComponent extends Component {
 DialogComponent.propTypes = {
   hideDialog: PropTypes.function,
   updateParticipantResponseAndSendToServer: PropTypes.function,
+  isUnableToSend: PropTypes.boolean,
 };

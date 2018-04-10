@@ -147,11 +147,25 @@ function resetMessageSender(callback) {
   });
 }
 
+function displayWaitingMessage(callback) {
+  socket.on('display-waiting-message', () => {
+    callback();
+  });
+}
+
+function hideWaitingMessage(callback) {
+  socket.on('hide-waiting-message', () => {
+    callback();
+  });
+}
+
 export { debugBackEnd,
          abortRoundInProgress,
          connectionEvent,
          connectionSetup,
+         displayWaitingMessage,
          hideChoiceDialog,
+         hideWaitingMessage,
          messageRejectedWarning,
          receiveGeneralMessage,
          receiveMessageKeys,

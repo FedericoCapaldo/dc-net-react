@@ -3,7 +3,9 @@ import { debugBackEnd,
          abortRoundInProgress,
          connectionEvent,
          connectionSetup,
+         displayWaitingMessage,
          hideChoiceDialog,
+         hideWaitingMessage,
          messageRejectedWarning,
          receiveGeneralMessage,
          receiveMessageKeys,
@@ -268,6 +270,7 @@ export default class AppComponent extends Component {
         messageLength: 0,
         messageKeys: [],
         roundNumber: 1,
+        displayInitialWaitingMessage: false,
       });
     });
 
@@ -308,6 +311,18 @@ export default class AppComponent extends Component {
       this.setState({
         amISender: false,
         showMessageDialog: false,
+      });
+    });
+
+    displayWaitingMessage(() => {
+      this.setState({
+        displayInitialWaitingMessage: true,
+      });
+    });
+
+    hideWaitingMessage(() => {
+      this.setState({
+        displayInitialWaitingMessage: false,
       });
     });
 
@@ -506,6 +521,13 @@ export default class AppComponent extends Component {
         />
         <div className="app-body">
         <button onClick={debugBackEnd}>debug</button>
+          {this.state.displayInitialWaitingMessage &&
+          <div className="inital-waiting-message-container">
+              <h3 className="inital-waiting-message">
+                Communication already in progress. Waiting Next Round to start.
+              </h3>
+            </div>
+          }
           {this.state.events &&
             this.state.events.map((ob) => {
               if (ob.constructor.name === 'Round') {

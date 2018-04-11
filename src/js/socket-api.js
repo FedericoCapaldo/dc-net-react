@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-const socket = io('localhost:9000');
+const socket = io();
 
 function debugBackEnd() {
   socket.emit('time-to-debug');

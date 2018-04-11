@@ -1,12 +1,11 @@
 require('./server.babel');
-var path = require('path');
-var http = require('http');
-var fs = require('fs');
-var express = require('express');
-var webpack = require('webpack');
-var ioServer = require('./lib/chat-server.js');
-
-
+const path = require('path');
+const http = require('http');
+const fs = require('fs');
+const express = require('express');
+const webpack = require('webpack');
+const ioServer = require('./lib/chat-server.js');
+const normalizePort = require('normalize-port');
 
 global.__DEVELOPMENT__ = process.env.NODE_ENV !== 'production';
 
@@ -55,7 +54,8 @@ process.on('uncaughtException', evt => {
   console.log('uncaughtException ', evt);
 });
 
-server.listen('9000', (err) => {
+const port = normalizePort(process.env.PORT || '9000');
+server.listen(port, (err) => {
   if (err) {
     console.error(err);
   }

@@ -12,7 +12,7 @@ global.__DEVELOPMENT__ = process.env.NODE_ENV !== 'production';
 var app = express();
 
 // NOTE: when you import stuff, assume that they are visibile and omit src/ in the path
-app.use(express.static('src'));
+app.use(express.static('public'));
 
 if (__DEVELOPMENT__) {
   var config = require('./webpack.config');
@@ -59,5 +59,5 @@ server.listen(port, (err) => {
   if (err) {
     console.error(err);
   }
-  console.info('==> 💻  Open http://%s:%s in a browser to view the app.', 'localhost', '9000');
+  console.info('==> 💻  Open http://%s:%s in a browser to view the app.', 'localhost', port);
 });

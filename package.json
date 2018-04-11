@@ -4,7 +4,10 @@
   "description": "A guide to setup webpack module bundler for your project",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "npm run webpack & npm run node",
+    "webpack": "webpack --config webpack.config.js",
+    "node": "node server.js",
+    "nodemon": "nodemon server.js",
     "test": "mocha --require babel-register"
   },
   "repository": {
@@ -12,8 +15,8 @@
     "url": "git+https://github.com/abhijeetNmishra/webpack-step-by-step.git"
   },
   "keywords": [
-    "webpack",
-    "babel",
+    "cryptography",
+    "socket.io",
     "react"
   ],
   "author": "https://github.com/abhijeetNmishra",

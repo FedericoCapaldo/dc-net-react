@@ -35,7 +35,7 @@ export default class HeaderComponent extends Component {
         <h3 className="header-title">
           DC-net simulation App - {this.props.whoami && <span>You are: {this.props.whoami}</span>}
         </h3>
-        <div className="dropdown float-right">
+        <div className="dropdown float-right header-control-container">
           <h3 className="dropdown-title">Controls</h3>
           <div className="dropdown-content">
             <div className="dropdown-scrolling" onClick={this.toggleScrolling}>

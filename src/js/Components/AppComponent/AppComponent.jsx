@@ -367,7 +367,7 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
     currentRound.valueToServer =
-      this.calculateXORValueToBroadcast(key1, key2, response);
+      this.calculateXORValue(key1, key2, response);
 
     sendParticipantVotingResponse(currentRound.valueToServer);
 
@@ -385,7 +385,7 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
     currentRound.valueToServer =
-      this.calculateXORValueToBroadcast(key1, key2, this.state.messageLength);
+      this.calculateXORValue(key1, key2, this.state.messageLength);
 
     sendParticipantLengthRoundResponse(currentRound.valueToServer);
 
@@ -412,7 +412,7 @@ export default class AppComponent extends Component {
     const key2 = currentRound.keys[1].keyValue;
 
     currentRound.valueToServer =
-      this.calculateXORValueToBroadcast(key1, key2, 0);
+      this.calculateXORValue(key1, key2, 0);
 
     sendParticipantLengthRoundResponse(currentRound.valueToServer);
 
@@ -431,11 +431,11 @@ export default class AppComponent extends Component {
     let messageCopy = this.state.messageCopy;
     if (this.state.amISender) {
       currentRound.valueToServer =
-        this.calculateOppositeValueToBroadcast(key1, key2, messageCopy.charCodeAt(0));
+        this.calculateXORValue(key1, key2, messageCopy.charCodeAt(0));
       messageCopy = messageCopy.substr(1);
     } else {
       currentRound.valueToServer =
-        this.calculateOppositeValueToBroadcast(key1, key2, 0);
+        this.calculateXORValue(key1, key2, 0);
     }
 
     sendParticipantCommunicationRoundResponse(currentRound.valueToServer);
@@ -446,11 +446,7 @@ export default class AppComponent extends Component {
     });
   }
 
-  calculateXORValueToBroadcast(key1, key2, participantChoice) {
-    return key1 ^ key2 ^ participantChoice;
-  }
-
-  calculateOppositeValueToBroadcast(key1, key2, participantChoice) {
+  calculateXORValue(key1, key2, participantChoice) {
     return key1 ^ key2 ^ participantChoice;
   }
 

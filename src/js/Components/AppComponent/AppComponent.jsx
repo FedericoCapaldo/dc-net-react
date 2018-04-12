@@ -47,7 +47,7 @@ export default class AppComponent extends Component {
       roundNumber: 1,
       timerSeconds: 0,
       timerMessage: '',
-      showDiagol: false,
+      showVotingDialog: false,
       showMessageDialog: false,
       whoami: '',
       amISender: false,
@@ -134,7 +134,7 @@ export default class AppComponent extends Component {
         if (currentRound.isVotingRound) {
           this.setState({
             events: tempEvents,
-            showDiagol: true,
+            showVotingDialog: true,
           });
         } else if (currentRound.isLengthRound) {
           if (this.state.amISender) {
@@ -261,7 +261,7 @@ export default class AppComponent extends Component {
       currentRound.abortReason = abortReason;
       this.setState({
         events: tempEvents,
-        showDiagol: false,
+        showVotingDialog: false,
         showMessageDialog: false,
         amISender: false,
         sentMessageLastRound: false,
@@ -446,8 +446,8 @@ export default class AppComponent extends Component {
     });
   }
 
-  calculateXORValue(key1, key2, participantChoice) {
-    return key1 ^ key2 ^ participantChoice;
+  calculateXORValue(key1, key2, participantMessage) {
+    return key1 ^ key2 ^ participantMessage;
   }
 
   resetReconnection() {
@@ -455,7 +455,7 @@ export default class AppComponent extends Component {
       events: [],
       roundNumber: 1,
       showMessageDialog: false,
-      showDiagol: false,
+      showVotingDialog: false,
       amISender: false,
       sentMessageLastRound: false,
       message: '',
@@ -480,7 +480,7 @@ export default class AppComponent extends Component {
       e.preventDefault();
     }
     this.setState({
-      showDiagol: false,
+      showVotingDialog: false,
     });
   }
 
@@ -553,7 +553,7 @@ export default class AppComponent extends Component {
               hideMessageInputDialog={this.hideMessageInputDialog}
             />
           }
-          {this.state.showDiagol &&
+          {this.state.showVotingDialog &&
             <DialogComponent
               hideDialog={this.hideDialog}
               updateParticipantResponseAndSendToServer=

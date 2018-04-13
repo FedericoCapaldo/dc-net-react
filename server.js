@@ -6,15 +6,21 @@ const express = require('express');
 const webpack = require('webpack');
 const ioServer = require('./lib/chat-server.js');
 const normalizePort = require('normalize-port');
-
-global.__DEVELOPMENT__ = process.env.NODE_ENV !== 'production';
-
 var app = express();
+
+// function credit to https://stackoverflow.com/a/31144924/3245486
+function requireHTTPS(req, res, next) {
+  // The 'x-forwarded-proto' check is for Heroku
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
 
 // NOTE: when you import stuff, assume that they are visibile and omit src/ in the path
 app.use(express.static('public'));
 
-if (__DEVELOPMENT__) {
+if (process.env.NODE_ENV !== 'production') {
   var config = require('./webpack.config');
   var compiler = webpack(config);
   app.use(require('webpack-dev-middleware')(compiler, {
@@ -25,6 +31,10 @@ if (__DEVELOPMENT__) {
 } else {
   var config = require('./webpack.prod.config');
   var compiler = webpack(config);
+}
+
+if(process.env.NODE_ENV === 'production') {
+  app.use(requireHTTPS);
 }
 
 const server = new http.Server(app);
@@ -59,5 +69,5 @@ server.listen(port, (err) => {
   if (err) {
     console.error(err);
   }
-  console.info('==> 💻  Open http://%s:%s in a browser to view the app.', 'localhost', port);
+  console.info(`Application open on port ${port}`);
 });

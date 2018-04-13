@@ -1,10 +1,6 @@
 import io from 'socket.io-client';
 const socket = io();
 
-function debugBackEnd() {
-  socket.emit('time-to-debug');
-}
-
 // events emitted by the components
 function sendParticipantVotingResponse(result) {
   socket.emit('participant-voting-response', result);
@@ -159,8 +155,7 @@ function hideWaitingMessage(callback) {
   });
 }
 
-export { debugBackEnd,
-         abortRoundInProgress,
+export { abortRoundInProgress,
          connectionEvent,
          connectionSetup,
          displayWaitingMessage,

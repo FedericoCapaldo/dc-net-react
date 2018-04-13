@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { debugBackEnd,
-         abortRoundInProgress,
+import { abortRoundInProgress,
          connectionEvent,
          connectionSetup,
          displayWaitingMessage,
@@ -212,16 +211,16 @@ export default class AppComponent extends Component {
       });
     });
 
-    receiveCommunicationRoundResult((singleAsciiLetter) => {
+    receiveCommunicationRoundResult((ASCIIcode) => {
       const tempEvents = this.state.events;
       const currentRound = tempEvents[this.state.currentRoundIndex];
       currentRound.isWaitingRoundResult = false;
-      currentRound.roundResult = singleAsciiLetter;
+      currentRound.roundResult = ASCIIcode;
       currentRound.completed = true;
 
       let message = this.state.message;
       if (!this.state.amISender) {
-        const letter = String.fromCharCode(singleAsciiLetter);
+        const letter = String.fromCharCode(ASCIIcode);
         message = message + letter;
       }
 
@@ -428,11 +427,11 @@ export default class AppComponent extends Component {
     const key1 = currentRound.keys[0].keyValue;
     const key2 = currentRound.keys[1].keyValue;
 
-    let messageCopy = this.state.messageCopy;
+    let sentence = this.state.messageCopy;
     if (this.state.amISender) {
       currentRound.valueToServer =
-        this.calculateXORValue(key1, key2, messageCopy.charCodeAt(0));
-      messageCopy = messageCopy.substr(1);
+        this.calculateXORValue(key1, key2, sentence.charCodeAt(0));
+      sentence = sentence.substr(1);
     } else {
       currentRound.valueToServer =
         this.calculateXORValue(key1, key2, 0);
@@ -442,7 +441,7 @@ export default class AppComponent extends Component {
 
     this.setState({
       events: tempEvents,
-      messageCopy,
+      messageCopy: sentence,
     });
   }
 
@@ -516,7 +515,6 @@ export default class AppComponent extends Component {
           toggleMessageHelpersInApp={this.toggleMessageHelpersInApp}
         />
         <div className="app-body">
-        <button onClick={debugBackEnd}>debug</button>
           {this.state.displayInitialWaitingMessage &&
           <div className="inital-waiting-message-container">
               <h3 className="inital-waiting-message">

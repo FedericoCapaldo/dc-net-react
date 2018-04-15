@@ -1,8 +1,8 @@
 {
-  "name": "webpack-step-by-step",
+  "name": "dining-cyptographers-network",
   "version": "1.0.0",
-  "description": "A guide to setup webpack module bundler for your project",
-  "main": "index.js",
+  "description": "A simulation tool for the Dining Cryptographers protocol",
+  "main": "server.js",
   "scripts": {
     "start": "npm run webpack & npm run node",
     "webpack": "webpack --config webpack.config.js",
@@ -10,21 +10,14 @@
     "nodemon": "nodemon server.js",
     "test": "mocha --require babel-register"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/abhijeetNmishra/webpack-step-by-step.git"
-  },
   "keywords": [
+    "Dining Cryptographers",
     "cryptography",
     "socket.io",
-    "react"
+    "react.js"
   ],
-  "author": "https://github.com/abhijeetNmishra",
+  "author": "Federico Capaldo",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/abhijeetNmishra/webpack-step-by-step/issues"
-  },
-  "homepage": "https://github.com/abhijeetNmishra/webpack-step-by-step#readme",
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
     "babel-core": "^6.4.0",
